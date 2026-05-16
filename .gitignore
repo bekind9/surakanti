@@ -1,0 +1,5 @@
+.DS_Store
+.vscode/
+deploy.sh
+index.htm_backup
+*.log
