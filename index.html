@@ -35,9 +35,10 @@
     <nav class="bg-emerald-900/95 backdrop-blur-md text-white py-3 px-8 shadow-md sticky top-0 z-50 border-b border-emerald-800">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="text-xl font-bold tracking-tight">Surakanti AI Hub</div>
-            <div class="flex gap-4">
+            <div class="flex gap-4 items-center">
                 <a href="#services" class="text-sm hover:text-emerald-200 transition-colors">Services</a>
-                <a href="#contact" class="text-sm hover:text-emerald-200 font-bold transition-colors">Contact</a>
+                <a href="#contact" class="text-sm hover:text-emerald-200 transition-colors">Contact</a>
+                <a href="blog.html" class="text-sm bg-emerald-700 hover:bg-emerald-600 px-4 py-1.5 rounded-full font-bold transition-colors ml-2">Blog</a>
             </div>
         </div>
     </nav>
@@ -105,7 +106,7 @@
             const message = input.value.trim();
             if (!message) return;
             
-            chatWindow.innerHTML += `<div class="bg-emerald-100 p-3 rounded-2xl rounded-br-sm self-end text-sm shadow-sm max-w-[85%]"><strong>You:</strong> ${message}</div>`;
+            chatWindow.innerHTML += `<div class="bg-emerald-100 p-3 rounded-2xl rounded-br-sm self-end text-sm shadow-sm max-w-[85%]"><strong>You:</strong> ${escapeHtml(message)}</div>`;
             input.value = '';
             
             const loadingId = 'loading-' + Date.now();
@@ -122,7 +123,8 @@
                 
                 document.getElementById(loadingId)?.remove();
                 
-                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full prose prose-sm prose-emerald max-w-none"><strong>AI:</strong> ${marked.parse(data.choices[0].message.content)}</div>`;
+                const aiMarkdown = data?.choices?.[0]?.message?.content || "No response received.";
+                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full prose prose-sm prose-emerald max-w-none"><strong>AI:</strong> ${sanitizeHtml(marked.parse(aiMarkdown))}</div>`;
             } catch (e) { 
                 document.getElementById(loadingId)?.remove();
                 chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">Failed to connect. Please try again.</div>`; 
@@ -130,6 +132,28 @@
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
         document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+        function sanitizeHtml(html) {
+            const template = document.createElement('template');
+            template.innerHTML = html;
+            template.content.querySelectorAll('script, iframe, object, embed, form, input, button').forEach(el => el.remove());
+            template.content.querySelectorAll('*').forEach(el => {
+                [...el.attributes].forEach(attr => {
+                    const name = attr.name.toLowerCase();
+                    const value = attr.value.trim().toLowerCase();
+                    if (name.startsWith('on') || value.startsWith('javascript:')) el.removeAttribute(attr.name);
+                });
+            });
+            return template.innerHTML;
+        }
     </script>
 </body>
 </html>
