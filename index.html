@@ -35,32 +35,76 @@
     <nav class="bg-emerald-900/95 backdrop-blur-md text-white py-3 px-8 shadow-md sticky top-0 z-50 border-b border-emerald-800">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="text-xl font-bold tracking-tight">Surakanti AI Hub</div>
-            <div class="flex gap-4 items-center">
+            <div class="flex flex-wrap gap-3 sm:gap-4 items-center justify-end">
                 <a href="#services" class="text-sm hover:text-emerald-200 transition-colors">Services</a>
-                <a href="#contact" class="text-sm hover:text-emerald-200 transition-colors">Contact</a>
+                <a href="/forms/" class="text-sm hover:text-emerald-200 transition-colors">Forms</a>
                 <a href="/blog" class="text-sm bg-emerald-700 hover:bg-emerald-600 px-4 py-1.5 rounded-full font-bold transition-colors ml-2">Blog</a>
+                <a href="#contact" class="text-sm hover:text-emerald-200 transition-colors">Contact</a>
             </div>
         </div>
     </nav>
 
-    <header class="py-20 px-4 text-center w-full max-w-5xl mx-auto overflow-hidden">
-        <h1 class="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight lg:whitespace-nowrap">Smart Farming, <span class="text-emerald-600">Powered by AI</span></h1>
-        <p class="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl mx-auto">Localized agricultural expertise for the community, available instantly.</p>
-        <button onclick="toggleChat()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-1 hover:shadow-xl">Consult the AI Expert</button>
+    <header class="py-20 px-4 text-center w-full max-w-6xl mx-auto overflow-hidden">
+        <h1 class="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight">AI Farming Help for <span class="text-emerald-600">Telangana Farmers</span></h1>
+        <p class="text-xl md:text-2xl text-emerald-700 font-bold mb-6">తెలంగాణ రైతుల కోసం AI వ్యవసాయ సహాయం</p>
+        <p class="text-lg md:text-xl text-slate-600 mb-5 max-w-3xl mx-auto">Get simple Telugu and English guidance for crop problems, pest diagnosis, mandi price checks, useful forms, and seasonal farming decisions.</p>
+        <p class="text-sm md:text-base text-slate-500 mb-10 max-w-3xl mx-auto">Ask about paddy, cotton, chilli, maize, red gram, fertilizers, pests, diseases, market prices, and farmer support schemes.</p>
+        <button onclick="toggleChat()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-1 hover:shadow-xl">Ask AI Rythu</button>
     </header>
 
     <section id="services" class="py-12 px-6 bg-white border-y border-slate-100">
-        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-6 text-center">
+        <div class="max-w-5xl mx-auto mb-8 text-center">
+            <h2 class="text-3xl font-extrabold text-slate-900">Services for Farmers</h2>
+            <p class="text-slate-500 mt-2">Simple guidance for common village farming questions.</p>
+        </div>
+        <div class="max-w-5xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
                 <div class="text-3xl mb-3">🌿</div>
                 <h3 class="font-bold text-lg">Crop Diagnosis</h3>
-                <p class="text-slate-500 text-sm mt-2">Expert guidance on crop health and disease management.</p>
+                <p class="text-slate-500 text-sm mt-2">Share symptoms and get next-step guidance for crop health.</p>
             </div>
             <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
-                <div class="text-3xl mb-3">💬</div>
-                <h3 class="font-bold text-lg">24/7 Assistance</h3>
-                <p class="text-slate-500 text-sm mt-2">Immediate agricultural answers delivered via AI chat.</p>
+                <div class="text-3xl mb-3">🐛</div>
+                <h3 class="font-bold text-lg">Pest & Disease Help</h3>
+                <p class="text-slate-500 text-sm mt-2">General guidance for pests, disease symptoms, and leaf spots.</p>
             </div>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+                <div class="text-3xl mb-3">📈</div>
+                <h3 class="font-bold text-lg">Mandi Price Checks</h3>
+                <p class="text-slate-500 text-sm mt-2">Learn how to check market prices before selling crops.</p>
+            </div>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+                <div class="text-3xl mb-3">📋</div>
+                <h3 class="font-bold text-lg">Useful Forms</h3>
+                <p class="text-slate-500 text-sm mt-2">Find common field, crop, and farmer record templates in one place.</p>
+            </div>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+                <div class="text-3xl mb-3">🌾</div>
+                <h3 class="font-bold text-lg">Crop Planning</h3>
+                <p class="text-slate-500 text-sm mt-2">Seasonal planning help for paddy, cotton, chilli, maize, and red gram.</p>
+            </div>
+            <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+                <div class="text-3xl mb-3">🧪</div>
+                <h3 class="font-bold text-lg">Fertilizer Guidance</h3>
+                <p class="text-slate-500 text-sm mt-2">General fertilizer timing and soil-health questions in simple language.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 px-6 bg-white border-y border-slate-100">
+        <div class="max-w-4xl mx-auto bg-emerald-50 border border-emerald-100 rounded-3xl p-6 md:p-8 text-center">
+            <h2 class="text-2xl font-extrabold text-emerald-900 mb-3">Independent Farming Information</h2>
+            <p class="text-emerald-950/80">Surakanti AI Hub is not a government website. It provides general farming information and practical record templates. For pesticide dosage, disease confirmation, or official eligibility decisions, please confirm with your local Agriculture Extension Officer or KVK.</p>
+        </div>
+    </section>
+
+    <section class="py-14 px-6 bg-slate-50">
+        <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <div>
+                <h2 class="text-2xl font-extrabold text-slate-900">Need farmer forms or field templates?</h2>
+                <p class="text-slate-500 mt-2">Open the forms page for farmer record forms, crop records, and practical checklists.</p>
+            </div>
+            <a href="/forms/" class="inline-flex justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition">View Forms</a>
         </div>
     </section>
 
@@ -68,7 +112,7 @@
         <div class="max-w-3xl mx-auto text-center">
             <h3 class="text-3xl font-bold mb-8">Get in Touch</h3>
             <div class="grid md:grid-cols-2 gap-4">
-                <a href="https://wa.me/919885710555" target="_blank" class="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white py-5 px-6 rounded-2xl font-bold shadow-md">WhatsApp Support</a>
+                <a href="https://wa.me/919885710555" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white py-5 px-6 rounded-2xl font-bold shadow-md">WhatsApp Support</a>
                 <a href="mailto:hello@surakanti.net" class="flex items-center justify-center gap-3 bg-emerald-700 hover:bg-emerald-800 text-white py-5 px-6 rounded-2xl font-bold shadow-md">Email Support</a>
             </div>
         </div>
