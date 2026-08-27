@@ -27,6 +27,7 @@ Cloudflare serves clean routes for static pages:
 - Home: `https://surakanti.net/`
 - Blog: `https://surakanti.net/blog`
 - Forms: `https://surakanti.net/forms` redirects to `/forms/`
+- Ventures: `ventures/` is deployed as a separate Cloudflare Pages project named `surakanti-ventures`.
 
 Do not link to `blog.html` in production navigation. Use `/blog`.
 
@@ -36,6 +37,12 @@ Forms routing has both:
 - `forms.html` as a fallback because production routing behaves similarly to `/blog` from `blog.html`
 
 Navigation should link to `/forms`.
+
+## Subdomains
+
+- `finance.surakanti.net` is attached to the existing `finances-app` Cloudflare Pages project.
+- `ventures.surakanti.net` was added to the `surakanti-ventures` Cloudflare Pages project on 2026-08-27, but DNS verification was pending because the `ventures.surakanti.net` CNAME record was not set.
+- Required DNS record for Ventures: `ventures.surakanti.net` CNAME to `surakanti-ventures.pages.dev`.
 
 ## Security Notes
 

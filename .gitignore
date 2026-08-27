@@ -1,5 +1,6 @@
 .DS_Store
 .vscode/
+.wrangler/
 deploy.sh
 index.htm_backup
 *.log
