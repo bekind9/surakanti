@@ -18,7 +18,6 @@
             }
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .chat-window::-webkit-scrollbar { width: 4px; }
         .chat-window::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
@@ -128,12 +127,21 @@
                 <span>Surakanti Agri AI</span>
                 <button onclick="toggleChat()" class="text-xl">✕</button>
             </div>
-            <div id="chat-window" class="chat-window h-[350px] overflow-y-auto p-4 flex flex-col gap-4 bg-slate-50/80">
-                <div class="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm max-w-[85%]">👋 Welcome! How can I help you with your crops today?</div>
+            <div id="pilot-access" class="p-5 bg-slate-50/80">
+                <p class="text-sm font-bold text-slate-800">పైలట్ ఆహ్వానం అవసరం</p>
+                <p class="text-xs text-slate-500 mt-1">మీకు ఇచ్చిన ఆహ్వాన కోడ్ నమోదు చేయండి.</p>
+                <div class="flex gap-2 mt-3">
+                    <input type="password" id="access-code" placeholder="ఆహ్వాన కోడ్" class="flex-1 px-3 py-2 text-sm rounded-xl border border-slate-200 outline-none">
+                    <button onclick="unlockPilot()" class="bg-emerald-600 text-white px-4 py-2 text-sm rounded-xl font-bold">ప్రవేశించండి</button>
+                </div>
+                <p id="access-error" class="text-red-500 text-xs mt-2 hidden"></p>
             </div>
-            <div class="p-3 bg-white border-t border-slate-100 flex gap-2">
-                <input type="text" id="user-input" placeholder="Ask a question..." class="flex-1 px-4 py-2 text-sm rounded-xl border border-slate-200 outline-none">
-                <button onclick="askAI()" class="bg-emerald-600 text-white px-5 py-2 text-sm rounded-xl font-bold">Ask</button>
+            <div id="chat-window" class="chat-window h-[350px] overflow-y-auto p-4 flex flex-col gap-4 bg-slate-50/80 hidden">
+                <div class="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm max-w-[85%]">నమస్కారం! మీ పంట గురించి ప్రశ్న అడగండి.</div>
+            </div>
+            <div id="chat-controls" class="p-3 bg-white border-t border-slate-100 flex gap-2 hidden">
+                <input type="text" id="user-input" maxlength="1000" placeholder="మీ ప్రశ్నను టైప్ చేయండి..." class="flex-1 px-4 py-2 text-sm rounded-xl border border-slate-200 outline-none">
+                <button onclick="askAI()" class="bg-emerald-600 text-white px-5 py-2 text-sm rounded-xl font-bold">అడగండి</button>
             </div>
         </div>
     </div>
@@ -144,7 +152,34 @@
 
     <script>
         function toggleChat() { document.getElementById('chat-widget').classList.toggle('hidden-chat'); }
+        let pilotReady = false;
+        async function unlockPilot() {
+            const codeInput = document.getElementById('access-code');
+            const error = document.getElementById('access-error');
+            const code = codeInput.value.trim();
+            if (!code) return;
+            error.classList.add('hidden');
+            try {
+                const response = await fetch('/api/agri/access', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'ప్రవేశం సాధ్యపడలేదు.');
+                pilotReady = true;
+                document.getElementById('pilot-access').classList.add('hidden');
+                document.getElementById('chat-window').classList.remove('hidden');
+                document.getElementById('chat-controls').classList.remove('hidden');
+                document.getElementById('user-input').focus();
+            } catch (e) {
+                error.textContent = e.message || 'ప్రవేశం సాధ్యపడలేదు.';
+                error.classList.remove('hidden');
+            }
+        }
         async function askAI() {
+            if (!pilotReady) return;
             const input = document.getElementById('user-input');
             const chatWindow = document.getElementById('chat-window');
             const message = input.value.trim();
@@ -158,24 +193,26 @@
             chatWindow.scrollTop = chatWindow.scrollHeight;
             
             try {
-                const response = await fetch("https://agri-hub-api.srinivas-surakanti.workers.dev/", {
+                const response = await fetch('/api/agri/chat', {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: [{ role: "system", content: "You are a helpful assistant." }, { role: "user", content: message }] })
+                    body: JSON.stringify({ message })
                 });
                 const data = await response.json();
                 
                 document.getElementById(loadingId)?.remove();
                 
-                const aiMarkdown = data?.choices?.[0]?.message?.content || "No response received.";
-                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full prose prose-sm prose-emerald max-w-none"><strong>AI:</strong> ${sanitizeHtml(marked.parse(aiMarkdown))}</div>`;
+                const answer = data?.text || data?.error || "సమాధానం అందలేదు. మళ్లీ ప్రయత్నించండి.";
+                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full whitespace-pre-line"><strong>AI:</strong> ${escapeHtml(answer)}</div>`;
             } catch (e) { 
                 document.getElementById(loadingId)?.remove();
-                chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">Failed to connect. Please try again.</div>`; 
+                chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">సేవకు కనెక్ట్ కాలేదు. మళ్లీ ప్రయత్నించండి.</div>`;
             }
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
         document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
+        document.getElementById('access-code').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlockPilot(); });
         function escapeHtml(value) {
             return String(value).replace(/[&<>"']/g, char => ({
                 '&': '&amp;',
@@ -184,19 +221,6 @@
                 '"': '&quot;',
                 "'": '&#39;'
             }[char]));
-        }
-        function sanitizeHtml(html) {
-            const template = document.createElement('template');
-            template.innerHTML = html;
-            template.content.querySelectorAll('script, iframe, object, embed, form, input, button').forEach(el => el.remove());
-            template.content.querySelectorAll('*').forEach(el => {
-                [...el.attributes].forEach(attr => {
-                    const name = attr.name.toLowerCase();
-                    const value = attr.value.trim().toLowerCase();
-                    if (name.startsWith('on') || value.startsWith('javascript:')) el.removeAttribute(attr.name);
-                });
-            });
-            return template.innerHTML;
         }
     </script>
 </body>
