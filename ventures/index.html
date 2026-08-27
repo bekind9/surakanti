@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Surakanti Ventures supports village entrepreneurs with modest funding, practical guidance, and simple digital tools.">
+    <meta property="og:title" content="Surakanti Ventures">
+    <meta property="og:description" content="Small capital. Local businesses. Village-led growth.">
+    <meta property="og:url" content="https://ventures.surakanti.net/">
+    <title>Surakanti Ventures | Village Enterprise Support</title>
+    <style>
+        :root {
+            --green: #173f2c;
+            --green-2: #24583f;
+            --gold: #b98934;
+            --clay: #b66f52;
+            --cream: #fbf8ef;
+            --warm: #f2eadb;
+            --paper: #fffdf7;
+            --charcoal: #20231f;
+            --muted: #656b61;
+            --line: #ded5c4;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            background: var(--cream);
+            color: var(--charcoal);
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.6;
+            text-rendering: optimizeLegibility;
+        }
+
+        a { color: inherit; }
+
+        .site-shell { overflow: hidden; }
+
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(251, 248, 239, 0.92);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(222, 213, 196, 0.78);
+        }
+
+        .nav-inner {
+            width: min(1120px, calc(100% - 32px));
+            min-height: 68px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--green);
+            font-weight: 800;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: var(--green);
+            color: var(--cream);
+            font-size: 17px;
+            font-weight: 800;
+            box-shadow: inset 0 -4px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        .nav-links a {
+            padding: 10px 12px;
+            color: #3d443b;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .nav-links a:hover { color: var(--green); }
+
+        .nav-cta {
+            border: 1px solid var(--green);
+            border-radius: 999px;
+            color: var(--green) !important;
+        }
+
+        main section { padding: 72px 0; }
+
+        .wrap {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .hero {
+            min-height: calc(100svh - 68px);
+            padding: 58px 0 44px;
+            display: grid;
+            align-items: center;
+            background:
+                radial-gradient(circle at 18% 18%, rgba(185, 137, 52, 0.13), transparent 30%),
+                linear-gradient(180deg, var(--cream), #f5efdf 86%, var(--warm));
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+            gap: 54px;
+            align-items: center;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--green);
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 28px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        h1, h2, h3, p { margin-top: 0; }
+
+        h1 {
+            margin-bottom: 18px;
+            color: var(--green);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(48px, 8vw, 86px);
+            line-height: 0.98;
+            letter-spacing: 0;
+        }
+
+        .headline {
+            max-width: 660px;
+            margin-bottom: 18px;
+            color: #2a3029;
+            font-size: clamp(24px, 4vw, 40px);
+            font-weight: 850;
+            line-height: 1.12;
+        }
+
+        .hero-copy {
+            max-width: 610px;
+            color: var(--muted);
+            font-size: 18px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .button {
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 12px 18px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        .button:hover { transform: translateY(-1px); }
+
+        .button.primary {
+            background: var(--green);
+            color: var(--cream);
+            box-shadow: 0 14px 32px rgba(23, 63, 44, 0.22);
+        }
+
+        .button.secondary {
+            background: rgba(255, 253, 247, 0.72);
+            border-color: var(--line);
+            color: var(--green);
+        }
+
+        .village-panel {
+            position: relative;
+            display: grid;
+            align-content: end;
+            gap: 14px;
+            padding: 18px;
+            border: 1px solid rgba(23, 63, 44, 0.16);
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, rgba(23, 63, 44, 0.04), rgba(23, 63, 44, 0.18)),
+                var(--paper);
+            box-shadow: 0 28px 70px rgba(72, 63, 45, 0.16);
+        }
+
+        .hero-photo {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4 / 3;
+            border: 1px solid rgba(23, 63, 44, 0.14);
+            border-radius: 6px;
+            background: #e8ddc8;
+        }
+
+        .hero-photo img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .scene {
+            position: absolute;
+            inset: 18px 18px 118px;
+            overflow: hidden;
+            border: 1px solid rgba(23, 63, 44, 0.14);
+            border-radius: 6px;
+            background:
+                linear-gradient(to bottom, #e7d9bb 0 39%, #d2bc8f 39% 41%, #8a8d54 41% 70%, #b69a62 70% 100%);
+        }
+
+        .sun {
+            position: absolute;
+            top: 30px;
+            right: 38px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #d5a24a;
+            opacity: 0.82;
+        }
+
+        .hill {
+            position: absolute;
+            left: -20px;
+            right: -20px;
+            bottom: 88px;
+            height: 115px;
+            background: #63754d;
+            clip-path: polygon(0 74%, 16% 48%, 30% 67%, 45% 35%, 60% 60%, 75% 42%, 100% 66%, 100% 100%, 0 100%);
+        }
+
+        .path {
+            position: absolute;
+            right: 76px;
+            bottom: -24px;
+            width: 130px;
+            height: 210px;
+            background: rgba(239, 214, 160, 0.76);
+            clip-path: polygon(30% 0, 58% 0, 100% 100%, 0 100%);
+        }
+
+        .shop {
+            position: absolute;
+            left: 34px;
+            bottom: 62px;
+            width: 178px;
+            height: 118px;
+            border: 3px solid #5d4e36;
+            background: #f6ecd5;
+            box-shadow: 12px 14px 0 rgba(43, 52, 38, 0.18);
+        }
+
+        .shop::before {
+            content: "";
+            position: absolute;
+            left: -8px;
+            right: -8px;
+            top: -28px;
+            height: 34px;
+            border: 3px solid #5d4e36;
+            background: repeating-linear-gradient(90deg, var(--clay) 0 26px, #f1d38b 26px 52px);
+        }
+
+        .shop::after {
+            content: "LOCAL";
+            position: absolute;
+            left: 64px;
+            top: 10px;
+            color: #4f3b27;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+        }
+
+        .door {
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            width: 36px;
+            height: 58px;
+            background: #5f4833;
+        }
+
+        .counter {
+            position: absolute;
+            right: 16px;
+            bottom: 22px;
+            width: 58px;
+            height: 28px;
+            border: 3px solid #5d4e36;
+            background: #b98934;
+        }
+
+        .jars {
+            position: absolute;
+            right: 20px;
+            bottom: 54px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .jars span {
+            width: 13px;
+            height: 19px;
+            border: 2px solid #5d4e36;
+            border-radius: 6px 6px 3px 3px;
+            background: #d7a347;
+        }
+
+        .work-table {
+            position: absolute;
+            left: 220px;
+            bottom: 56px;
+            width: 116px;
+            height: 58px;
+            border: 3px solid #5d4e36;
+            background: #e8c989;
+            box-shadow: 9px 11px 0 rgba(43, 52, 38, 0.14);
+        }
+
+        .work-table::before {
+            content: "";
+            position: absolute;
+            left: 16px;
+            top: -42px;
+            width: 58px;
+            height: 42px;
+            border: 3px solid #5d4e36;
+            border-bottom: 0;
+            border-radius: 28px 28px 0 0;
+            background: #f8efdc;
+        }
+
+        .work-table::after {
+            content: "";
+            position: absolute;
+            left: 80px;
+            top: -22px;
+            width: 26px;
+            height: 26px;
+            border: 3px solid #5d4e36;
+            border-radius: 50%;
+            background: var(--clay);
+        }
+
+        .dairy-cans {
+            position: absolute;
+            right: 38px;
+            bottom: 62px;
+            display: flex;
+            align-items: end;
+            gap: 9px;
+        }
+
+        .dairy-cans span {
+            width: 28px;
+            height: 48px;
+            border: 3px solid #5d4e36;
+            border-radius: 10px 10px 5px 5px;
+            background: #d8ded0;
+            box-shadow: inset 0 10px 0 rgba(255,255,255,0.35);
+        }
+
+        .dairy-cans span:nth-child(2) {
+            height: 62px;
+            background: #c8d3c2;
+        }
+
+        .record-card {
+            position: absolute;
+            right: 30px;
+            top: 114px;
+            width: 92px;
+            padding: 10px;
+            border: 2px solid rgba(93, 78, 54, 0.62);
+            border-radius: 6px;
+            background: rgba(255, 253, 247, 0.86);
+            box-shadow: 0 12px 22px rgba(43, 52, 38, 0.12);
+        }
+
+        .record-card span {
+            display: block;
+            height: 5px;
+            margin-bottom: 7px;
+            border-radius: 999px;
+            background: rgba(36, 88, 63, 0.74);
+        }
+
+        .record-card span:nth-child(2) {
+            width: 68%;
+            background: rgba(185, 137, 52, 0.82);
+        }
+
+        .record-card span:nth-child(3) {
+            width: 48%;
+        }
+
+        .person {
+            position: absolute;
+            bottom: 58px;
+            width: 18px;
+            height: 42px;
+            border-radius: 9px 9px 4px 4px;
+            background: #24583f;
+        }
+
+        .person::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            top: -18px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #7b573d;
+        }
+
+        .person.one {
+            left: 286px;
+        }
+
+        .person.two {
+            right: 128px;
+            height: 36px;
+            background: var(--clay);
+        }
+
+        .field-lines {
+            position: absolute;
+            inset: auto -24px 0;
+            height: 104px;
+            background: repeating-linear-gradient(167deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 18px);
+            opacity: 0.75;
+        }
+
+        .panel-note {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 42px 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 253, 247, 0.94);
+        }
+
+        .note-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: var(--green-2);
+            color: var(--cream);
+            font-size: 20px;
+        }
+
+        .panel-note strong {
+            display: block;
+            color: var(--green);
+            line-height: 1.2;
+        }
+
+        .panel-note span {
+            display: block;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .section-head {
+            max-width: 740px;
+            margin-bottom: 30px;
+        }
+
+        .section-head.center {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--green);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.05;
+        }
+
+        .section-head p {
+            color: var(--muted);
+            font-size: 18px;
+        }
+
+        .mission { background: var(--warm); }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 36px;
+            align-items: stretch;
+        }
+
+        .mission-card {
+            padding: 30px;
+            border-radius: 8px;
+            background: var(--green);
+            color: var(--cream);
+        }
+
+        .mission-card h2 { color: var(--cream); }
+
+        .mission-card .eyebrow { color: var(--cream); }
+
+        .mission-card p {
+            color: rgba(251, 248, 239, 0.82);
+            font-size: 18px;
+        }
+
+        .mission-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .plain-item {
+            display: grid;
+            grid-template-columns: 46px 1fr;
+            gap: 14px;
+            padding: 18px;
+            border: 1px solid rgba(23, 63, 44, 0.12);
+            border-radius: 8px;
+            background: rgba(255, 253, 247, 0.72);
+        }
+
+        .plain-item b { color: var(--green); }
+
+        .plain-item p { margin-bottom: 0; }
+
+        .icon {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: rgba(185, 137, 52, 0.18);
+            color: var(--green);
+            font-size: 22px;
+        }
+
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .support-card, .story-card {
+            min-height: 190px;
+            padding: 22px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--paper);
+            box-shadow: 0 12px 26px rgba(63, 54, 39, 0.06);
+        }
+
+        .support-card .icon { margin-bottom: 18px; }
+
+        h3 {
+            margin-bottom: 8px;
+            color: var(--green);
+            font-size: 21px;
+            line-height: 1.2;
+        }
+
+        .support-card p, .story-card p {
+            margin-bottom: 0;
+            color: var(--muted);
+        }
+
+        .how {
+            background: var(--green);
+            color: var(--cream);
+        }
+
+        .how h2, .how h3 { color: var(--cream); }
+
+        .how .eyebrow { color: var(--cream); }
+
+        .how .section-head p { color: rgba(251, 248, 239, 0.72); }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            counter-reset: steps;
+        }
+
+        .step {
+            min-height: 238px;
+            padding: 22px;
+            border: 1px solid rgba(251, 248, 239, 0.18);
+            border-radius: 8px;
+            background: rgba(255, 253, 247, 0.08);
+        }
+
+        .step::before {
+            counter-increment: steps;
+            content: "0" counter(steps);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            margin-bottom: 22px;
+            border-radius: 999px;
+            background: var(--gold);
+            color: var(--charcoal);
+            font-weight: 900;
+        }
+
+        .step p {
+            margin-bottom: 0;
+            color: rgba(251, 248, 239, 0.72);
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .principle {
+            min-height: 120px;
+            display: grid;
+            align-content: space-between;
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--paper);
+            color: var(--green);
+            font-weight: 850;
+        }
+
+        .principle span {
+            color: var(--gold);
+            font-size: 20px;
+        }
+
+        .stories { background: #f6efe1; }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .tag {
+            display: inline-flex;
+            margin-bottom: 16px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(36, 88, 63, 0.1);
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .apply { background: var(--cream); }
+
+        .apply-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.85fr) minmax(360px, 1.15fr);
+            gap: 34px;
+            align-items: start;
+        }
+
+        .contact-panel {
+            padding: 26px;
+            border-radius: 8px;
+            background: var(--green);
+            color: var(--cream);
+        }
+
+        .contact-panel h2 {
+            color: var(--cream);
+            font-size: clamp(32px, 4vw, 48px);
+        }
+
+        .contact-panel .eyebrow { color: var(--cream); }
+
+        .contact-panel p { color: rgba(251, 248, 239, 0.76); }
+
+        .contact-lines {
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .contact-lines a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 14px;
+            border-radius: 8px;
+            background: rgba(255, 253, 247, 0.1);
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+            padding: 24px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--paper);
+            box-shadow: 0 22px 54px rgba(63, 54, 39, 0.1);
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        label {
+            display: grid;
+            gap: 7px;
+            color: #3b4239;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #cfc5b4;
+            border-radius: 8px;
+            outline: none;
+            background: #fffefa;
+            color: var(--charcoal);
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 112px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--green-2);
+            box-shadow: 0 0 0 3px rgba(36, 88, 63, 0.14);
+        }
+
+        .form-note {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer {
+            padding: 34px 0;
+            background: #171a16;
+            color: rgba(251, 248, 239, 0.72);
+        }
+
+        .footer-inner {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .footer strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--cream);
+        }
+
+        @media (max-width: 920px) {
+            .nav-inner {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 14px 0;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 2px;
+            }
+
+            .hero {
+                min-height: auto;
+                padding-top: 46px;
+            }
+
+            .hero-grid,
+            .mission-grid,
+            .apply-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .village-panel { min-height: 430px; }
+
+            .support-grid,
+            .story-grid,
+            .steps {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .principles-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            main section { padding: 52px 0; }
+
+            .nav-links a {
+                padding: 9px 10px;
+                font-size: 13px;
+            }
+
+            .hero {
+                padding-bottom: 34px;
+            }
+
+            .hero-grid { gap: 34px; }
+
+            h1 { font-size: 54px; }
+
+            .headline { font-size: 27px; }
+
+            .hero-copy,
+            .section-head p {
+                font-size: 16px;
+            }
+
+            .actions,
+            .button {
+                width: 100%;
+            }
+
+            .support-grid,
+            .story-grid,
+            .steps,
+            .principles-grid,
+            .field-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .village-panel {
+                padding: 12px;
+            }
+
+            .scene { inset: 12px 12px 112px; }
+
+            .shop {
+                left: 24px;
+                width: 146px;
+            }
+
+            .work-table {
+                left: 176px;
+                width: 92px;
+            }
+
+            .dairy-cans,
+            .record-card,
+            .person.two {
+                display: none;
+            }
+
+            .plain-item,
+            .panel-note {
+                grid-template-columns: 1fr;
+            }
+
+            form,
+            .contact-panel,
+            .mission-card {
+                padding: 20px;
+            }
+
+            .footer-inner { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="site-shell">
+        <nav class="nav" aria-label="Primary navigation">
+            <div class="nav-inner">
+                <a class="brand" href="#top" aria-label="Surakanti Ventures home">
+                    <span class="brand-mark">S</span>
+                    <span>Surakanti Ventures</span>
+                </a>
+                <div class="nav-links">
+                    <a href="#mission">Mission</a>
+                    <a href="#support">Support</a>
+                    <a href="#how">How it works</a>
+                    <a href="#contact" class="nav-cta">Apply</a>
+                </div>
+            </div>
+        </nav>
+
+        <main id="top">
+            <header class="hero">
+                <div class="wrap hero-grid">
+                    <div>
+                        <p class="eyebrow">Village enterprise support</p>
+                        <h1>Surakanti Ventures</h1>
+                        <p class="headline">Small capital. Local businesses. Village-led growth.</p>
+                        <p class="hero-copy">We support village entrepreneurs with modest funding, practical guidance, and simple digital tools so local businesses can grow with dignity.</p>
+                        <div class="actions" aria-label="Primary actions">
+                            <a class="button primary" href="#contact">Apply for Support</a>
+                            <a class="button secondary" href="mailto:hello@surakanti.net?subject=Nominate%20a%20Village%20Business">Nominate a Business</a>
+                        </div>
+                    </div>
+
+                    <div class="village-panel" aria-label="Village business illustration">
+                        <div class="hero-photo">
+                            <img src="assets/hero-village-enterprise.jpg" alt="Village entrepreneurs reviewing a ledger and phone records beside local business goods">
+                        </div>
+                        <div class="panel-note">
+                            <span class="note-icon" aria-hidden="true">+</span>
+                            <div>
+                                <strong>Practical help, close to the ground</strong>
+                                <span>For shops, services, tailoring, food, dairy, farming-adjacent work, and youth income projects.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="mission" id="mission">
+                <div class="wrap mission-grid">
+                    <div class="mission-card">
+                        <p class="eyebrow">Mission</p>
+                        <h2>Careful support for capable people.</h2>
+                        <p>Many capable people in villages have strong business ideas but limited access to capital, mentorship, or digital support. Surakanti Ventures exists to run small, careful experiments that help practical local businesses get started or grow.</p>
+                    </div>
+                    <div class="mission-list" aria-label="What Surakanti Ventures provides">
+                        <div class="plain-item">
+                            <span class="icon" aria-hidden="true">Rs</span>
+                            <div>
+                                <b>Modest funding</b>
+                                <p>Small amounts of support for specific needs like tools, stock, equipment, or setup costs.</p>
+                            </div>
+                        </div>
+                        <div class="plain-item">
+                            <span class="icon" aria-hidden="true">ok</span>
+                            <div>
+                                <b>Practical guidance</b>
+                                <p>Simple help with planning, pricing, record keeping, local trust, and next steps.</p>
+                            </div>
+                        </div>
+                        <div class="plain-item">
+                            <span class="icon" aria-hidden="true">@</span>
+                            <div>
+                                <b>Digital enablement</b>
+                                <p>Basic support for forms, phone-based records, payments, listings, and communication.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="support">
+                <div class="wrap">
+                    <div class="section-head">
+                        <p class="eyebrow">Who we support</p>
+                        <h2>Small businesses that can improve family livelihoods.</h2>
+                        <p>The focus is practical income-generating work rooted in local demand and community trust.</p>
+                    </div>
+                    <div class="support-grid">
+                        <article class="support-card">
+                            <span class="icon" aria-hidden="true">[]</span>
+                            <h3>Village shops</h3>
+                            <p>Support for stock, storage, small equipment, and simple records.</p>
+                        </article>
+                        <article class="support-card">
+                            <span class="icon" aria-hidden="true">wm</span>
+                            <h3>Women-led microbusinesses</h3>
+                            <p>Home-based and community-based businesses that create steady income.</p>
+                        </article>
+                        <article class="support-card">
+                            <span class="icon" aria-hidden="true">tf</span>
+                            <h3>Tailoring, food, dairy, and farm-adjacent work</h3>
+                            <p>Everyday services and products that villages already use and value.</p>
+                        </article>
+                        <article class="support-card">
+                            <span class="icon" aria-hidden="true">up</span>
+                            <h3>Youth income projects</h3>
+                            <p>Small projects that help young people build skills, confidence, and income.</p>
+                        </article>
+                        <article class="support-card">
+                            <span class="icon" aria-hidden="true">ls</span>
+                            <h3>Local services</h3>
+                            <p>Repairs, delivery, phone services, field support, and other practical village needs.</p>
+                        </article>
+                        <article class="support-card">
+                            <span class="icon" aria-hidden="true">01</span>
+                            <h3>Simple digital enablement</h3>
+                            <p>Phone-first tools for records, payments, promotion, and learning what works.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="how" id="how">
+                <div class="wrap">
+                    <div class="section-head center">
+                        <p class="eyebrow">How it works</p>
+                        <h2>Simple steps, clear follow-up.</h2>
+                        <p>Each request is reviewed carefully. Support is matched to the real need, not to a fixed program or promise.</p>
+                    </div>
+                    <div class="steps">
+                        <article class="step">
+                            <h3>Apply or get referred</h3>
+                            <p>Share the person, village, business idea, and the kind of help needed.</p>
+                        </article>
+                        <article class="step">
+                            <h3>Review the need</h3>
+                            <p>We look at the business idea, local demand, use of support, and follow-up plan.</p>
+                        </article>
+                        <article class="step">
+                            <h3>Support the work</h3>
+                            <p>Support may include small funding, tools, equipment, guidance, or digital help.</p>
+                        </article>
+                        <article class="step">
+                            <h3>Follow up and learn</h3>
+                            <p>We check progress, learn what worked, and share lessons transparently over time.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="wrap">
+                    <div class="section-head">
+                        <p class="eyebrow">Principles</p>
+                        <h2>Ground rules for every experiment.</h2>
+                    </div>
+                    <div class="principles-grid">
+                        <div class="principle"><span>01</span>Dignity first</div>
+                        <div class="principle"><span>02</span>Practical businesses</div>
+                        <div class="principle"><span>03</span>Small experiments</div>
+                        <div class="principle"><span>04</span>Local trust</div>
+                        <div class="principle"><span>05</span>Transparent learning</div>
+                        <div class="principle"><span>06</span>Long-term community benefit</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stories" id="stories">
+                <div class="wrap">
+                    <div class="section-head">
+                        <p class="eyebrow">Stories and early experiments</p>
+                        <h2>Learning in public as pilots begin.</h2>
+                        <p>Surakanti Ventures is starting small. Business stories will be shared here as we learn what support is useful and where it creates durable value.</p>
+                    </div>
+                    <div class="story-grid">
+                        <article class="story-card">
+                            <span class="tag">Coming soon</span>
+                            <h3>First village pilots</h3>
+                            <p>Early pilots will focus on practical needs, clear use of funds, and regular follow-up.</p>
+                        </article>
+                        <article class="story-card">
+                            <span class="tag">Coming soon</span>
+                            <h3>Small business stories</h3>
+                            <p>Short updates will highlight what changed for the entrepreneur, family, and community.</p>
+                        </article>
+                        <article class="story-card">
+                            <span class="tag">Coming soon</span>
+                            <h3>What we are learning</h3>
+                            <p>Notes from each experiment will help improve future support and keep expectations honest.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="apply" id="contact">
+                <div class="wrap apply-grid">
+                    <div class="contact-panel">
+                        <p class="eyebrow">Apply or contact</p>
+                        <h2>Tell us about a village business.</h2>
+                        <p>Use the form to share a request, or send a nomination by email. A good application explains the person, the business, the support needed, and how it will be used.</p>
+                        <div class="contact-lines">
+                            <a href="mailto:hello@surakanti.net">Email hello@surakanti.net</a>
+                            <a href="https://ventures.surakanti.net/">ventures.surakanti.net</a>
+                        </div>
+                    </div>
+
+                    <form action="mailto:hello@surakanti.net" method="post" enctype="text/plain">
+                        <div class="field-grid">
+                            <label>
+                                Name
+                                <input name="Name" autocomplete="name" required>
+                            </label>
+                            <label>
+                                Phone number
+                                <input name="Phone" inputmode="tel" autocomplete="tel" required>
+                            </label>
+                        </div>
+                        <label>
+                            Village / town
+                            <input name="Village or town" autocomplete="address-level2" required>
+                        </label>
+                        <label>
+                            Business or idea
+                            <textarea name="Business or idea" required></textarea>
+                        </label>
+                        <label>
+                            Amount or type of support needed
+                            <input name="Support needed" placeholder="Example: Rs. 10,000 for stock, sewing machine, display shelves">
+                        </label>
+                        <label>
+                            How the support will be used
+                            <textarea name="How support will be used" required></textarea>
+                        </label>
+                        <button class="button primary" type="submit">Submit Application</button>
+                        <p class="form-note">Submitting opens your email app with these details. Please avoid sharing sensitive documents until someone from Surakanti follows up.</p>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-inner">
+                <div>
+                    <strong>Surakanti Ventures</strong>
+                    <span>A small initiative by Surakanti to support village entrepreneurship.</span>
+                </div>
+                <div>ventures.surakanti.net</div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
