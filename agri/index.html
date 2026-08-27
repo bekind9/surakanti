@@ -199,7 +199,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message })
                 });
-                const data = await response.json();
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data?.error || `సేవలో సమస్య ఉంది (${response.status}).`);
                 
                 document.getElementById(loadingId)?.remove();
                 
@@ -207,7 +208,7 @@
                 chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full whitespace-pre-line"><strong>AI:</strong> ${escapeHtml(answer)}</div>`;
             } catch (e) { 
                 document.getElementById(loadingId)?.remove();
-                chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">సేవకు కనెక్ట్ కాలేదు. మళ్లీ ప్రయత్నించండి.</div>`;
+                chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">${escapeHtml(e.message || 'సేవకు కనెక్ట్ కాలేదు. మళ్లీ ప్రయత్నించండి.')}</div>`;
             }
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
