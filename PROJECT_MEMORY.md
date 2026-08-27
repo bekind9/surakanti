@@ -42,7 +42,8 @@ Navigation should link to `/forms`.
 
 ## Subdomains
 
-- `agri.surakanti.net` is the agriculture/farming site copied from the former main homepage.
+- `agri.surakanti.net` is the agriculture/farming site copied from the former main homepage. It is attached to the `surakanti-agri` Cloudflare Pages project, but DNS verification was pending because the `agri.surakanti.net` CNAME record was not set.
+- Required DNS record for Agri: `agri.surakanti.net` CNAME to `surakanti-agri.pages.dev`.
 - `finance.surakanti.net` is attached to the existing `finances-app` Cloudflare Pages project.
 - `ventures.surakanti.net` was added to the `surakanti-ventures` Cloudflare Pages project on 2026-08-27, but DNS verification was pending because the `ventures.surakanti.net` CNAME record was not set.
 - Required DNS record for Ventures: `ventures.surakanti.net` CNAME to `surakanti-ventures.pages.dev`.
