@@ -39,6 +39,16 @@ Paste the Muse key only when Wrangler prompts for it. Never put it in HTML, Java
 
 ## Seed an invite code
 
+The easiest method is to run this helper from the repository root:
+
+```bash
+python3 scripts/seed_agri_invite.py
+```
+
+It asks for the invite code without displaying it, then stores only a SHA-256 hash in D1. Keep the code private and share it only with pilot participants.
+
+Manual method, if needed:
+
 The database stores only SHA-256 hashes of invite codes. Generate a hash without printing any API key:
 
 ```bash
