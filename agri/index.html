@@ -131,7 +131,7 @@
                 <p class="text-sm font-bold text-slate-800">పైలట్ ఆహ్వానం అవసరం</p>
                 <p class="text-xs text-slate-500 mt-1">మీకు ఇచ్చిన ఆహ్వాన కోడ్ నమోదు చేయండి.</p>
                 <div class="flex gap-2 mt-3">
-                    <input type="password" id="access-code" placeholder="ఆహ్వాన కోడ్" class="flex-1 px-3 py-2 text-sm rounded-xl border border-slate-200 outline-none">
+                    <input type="text" id="access-code" name="pilot-invite-code" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ఆహ్వాన కోడ్" class="flex-1 px-3 py-2 text-sm rounded-xl border border-slate-200 outline-none">
                     <button onclick="unlockPilot()" class="bg-emerald-600 text-white px-4 py-2 text-sm rounded-xl font-bold">ప్రవేశించండి</button>
                 </div>
                 <p id="access-error" class="text-red-500 text-xs mt-2 hidden"></p>
