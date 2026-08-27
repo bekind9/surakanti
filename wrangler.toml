@@ -1,0 +1,12 @@
+name = "surakanti-agri"
+pages_build_output_dir = "./agri"
+compatibility_date = "2026-08-26"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "surakanti-agri-db"
+database_id = "5b0d028c-db03-41a8-9ed7-ed7dd81aa238"
+migrations_dir = "./migrations"
+
+[vars]
+AGRI_ALLOWED_ORIGIN = "https://agri.surakanti.net"

@@ -4,4 +4,4 @@
 deploy.sh
 index.htm_backup
 *.log
-wrangler.toml
+.dev.vars
