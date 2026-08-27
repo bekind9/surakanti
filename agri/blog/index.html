@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Surakanti Agri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Navigation -->
+    <nav class="bg-emerald-900/95 backdrop-blur-md text-white py-3 px-8 shadow-md sticky top-0 z-50 border-b border-emerald-800">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold tracking-tight"><a href="/">Surakanti Agri</a></div>
+            <div class="flex gap-4 items-center">
+                <a href="/" class="text-sm hover:text-emerald-200 transition-colors">Home</a>
+                <a href="/blog" class="text-sm hover:text-emerald-200 font-bold transition-colors">Blog</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto py-12 px-6 min-h-screen">
+        
+        <!-- Post Viewer (Hidden by default) -->
+        <article id="post-viewer" class="hidden bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-slate-100 prose prose-emerald max-w-none">
+            <button onclick="showList()" class="mb-8 text-sm font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-2">
+                &larr; Back to all posts
+            </button>
+            <div id="post-content"></div>
+        </article>
+
+        <!-- Post List (Visible by default) -->
+        <div id="post-list">
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-8 tracking-tight">Latest Updates</h1>
+            <div id="posts-container" class="grid gap-6">
+                <!-- Posts will be injected here via JS -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-8 text-center text-xs mt-auto">
+        <p>&copy; 2026 Surakanti Agri. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function sanitizeHtml(html) {
+            const template = document.createElement('template');
+            template.innerHTML = html;
+            template.content.querySelectorAll('script, iframe, object, embed, form, input, button').forEach(el => el.remove());
+            template.content.querySelectorAll('*').forEach(el => {
+                [...el.attributes].forEach(attr => {
+                    const name = attr.name.toLowerCase();
+                    const value = attr.value.trim().toLowerCase();
+                    if (name.startsWith('on') || value.startsWith('javascript:')) el.removeAttribute(attr.name);
+                });
+            });
+            return template.innerHTML;
+        }
+
+        async function loadPosts() {
+            try {
+                const response = await fetch('/posts.json');
+                const posts = await response.json();
+                const container = document.getElementById('posts-container');
+                
+                posts.forEach(post => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer";
+                    card.onclick = () => loadPost(post.id);
+                    card.innerHTML = `
+                        <div class="text-xs font-bold text-emerald-600 mb-2">${escapeHtml(post.date)}</div>
+                        <h2 class="text-2xl font-bold text-slate-900 mb-3">${escapeHtml(post.title)}</h2>
+                        <p class="text-slate-600">${escapeHtml(post.excerpt)}</p>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Failed to load posts index:", error);
+            }
+        }
+
+        async function loadPost(id) {
+            try {
+                const response = await fetch(`/posts/${id}.md`);
+                if (!response.ok) throw new Error("Post not found");
+                const markdown = await response.text();
+                
+                document.getElementById('post-content').innerHTML = sanitizeHtml(marked.parse(markdown));
+                
+                document.getElementById('post-list').classList.add('hidden');
+                document.getElementById('post-viewer').classList.remove('hidden');
+                window.scrollTo(0, 0);
+                
+                document.getElementById('post-content').innerHTML += `
+                    <hr class="my-8">
+                    <p class="text-sm text-slate-500">More updates coming soon.</p>
+                `;
+            } catch (error) {
+                console.error("Failed to load post:", error);
+                alert("Sorry, could not load this post.");
+            }
+        }
+
+        function showList() {
+            document.getElementById('post-list').classList.remove('hidden');
+            document.getElementById('post-viewer').classList.add('hidden');
+            document.getElementById('post-content').innerHTML = '';
+        }
+
+        // Initialize
+        loadPosts();
+    </script>
+</body>
+</html>

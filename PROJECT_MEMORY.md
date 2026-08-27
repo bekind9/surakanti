@@ -8,6 +8,7 @@ Production is served by Cloudflare from the GitHub repository:
 - Git remote: `git@github.com:bekind9/surakanti.git`
 - Branch: `main`
 - Production site: `https://surakanti.net`
+- Main domain purpose: business/initiative landing page that links to the Surakanti subdomains.
 
 Deploy process:
 
@@ -24,10 +25,11 @@ Do not use Hostinger FTP for production while the Cloudflare route is active. `s
 
 Cloudflare serves clean routes for static pages:
 
-- Home: `https://surakanti.net/`
+- Home: `https://surakanti.net/` is the Surakanti business/initiative hub.
 - Blog: `https://surakanti.net/blog`
 - Forms: `https://surakanti.net/forms` redirects to `/forms/`
 - Ventures: `ventures/` is deployed as a separate Cloudflare Pages project named `surakanti-ventures`.
+- Agri: `agri/` is deployed as a separate Cloudflare Pages project for the former farming homepage.
 
 Do not link to `blog.html` in production navigation. Use `/blog`.
 
@@ -40,6 +42,7 @@ Navigation should link to `/forms`.
 
 ## Subdomains
 
+- `agri.surakanti.net` is the agriculture/farming site copied from the former main homepage.
 - `finance.surakanti.net` is attached to the existing `finances-app` Cloudflare Pages project.
 - `ventures.surakanti.net` was added to the `surakanti-ventures` Cloudflare Pages project on 2026-08-27, but DNS verification was pending because the `ventures.surakanti.net` CNAME record was not set.
 - Required DNS record for Ventures: `ventures.surakanti.net` CNAME to `surakanti-ventures.pages.dev`.
