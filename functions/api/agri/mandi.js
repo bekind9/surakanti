@@ -1,21 +1,17 @@
 import {
-  consumeRateLimit,
-  findSession,
   jsonResponse,
   optionsResponse,
-  recordLatency,
-  requireDatabase,
 } from "./_shared.js";
 
 const RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070";
-const CACHE_SECONDS = 60 * 60;
+const CACHE_SECONDS = 24 * 60 * 60;
 
 const MARKETS = {
   nizamabad: { label: "నిజామాబాద్", matches: (row) => /nizamabad apmc/i.test(row.market || "") },
   warangal: { label: "వరంగల్", matches: (row) => /warangal apmc/i.test(row.market || "") },
-  hyderabad: { label: "హైదరాబాద్", matches: (row) => /^hyderabad$/i.test(row.district || "") },
   karimnagar: { label: "కరీంనగర్", matches: (row) => /karimnagar apmc/i.test(row.market || "") },
   metpally: { label: "మెట్‌పల్లి", matches: (row) => /metpally|metpalli/i.test(row.market || "") },
+  korutla: { label: "కోరుట్ల", matches: (row) => /korutla|koratla/i.test(row.market || "") },
 };
 
 const CROPS = {
@@ -24,6 +20,16 @@ const CROPS = {
   turmeric: { label: "పసుపు", matches: (row) => /^turmeric$/i.test(row.commodity || "") },
   chilli: { label: "మిర్చి", matches: (row) => /chilli/i.test(row.commodity || "") },
   sesame: { label: "నువ్వులు", matches: (row) => /sesam/i.test(row.commodity || "") },
+};
+
+const MARKET_NAMES_TE = {
+  "Nizamabad APMC": "నిజామాబాద్ ఏపీఎంసీ",
+  "Warangal APMC": "వరంగల్ ఏపీఎంసీ",
+  "Cherial APMC": "చేర్యాల ఏపీఎంసీ",
+  "Karimnagar APMC": "కరీంనగర్ ఏపీఎంసీ",
+  "Metpally APMC": "మెట్‌పల్లి ఏపీఎంసీ",
+  "Korutla APMC": "కోరుట్ల ఏపీఎంసీ",
+  "Koratla APMC": "కోరుట్ల ఏపీఎంసీ",
 };
 
 function dateValue(value) {
@@ -42,6 +48,7 @@ export function filterMandiRecords(records, marketKey, cropKey) {
     .map((row) => ({
       district: row.district,
       market: row.market,
+      market_name_te: MARKET_NAMES_TE[row.market] || market.label,
       commodity: row.commodity,
       variety: row.variety,
       arrival_date: row.arrival_date,
@@ -51,8 +58,57 @@ export function filterMandiRecords(records, marketKey, cropKey) {
     }));
 }
 
+export function filterMarketRecords(records, marketKey) {
+  const market = MARKETS[marketKey];
+  if (!market) return null;
+  return records
+    .filter((row) => market.matches(row) && Object.values(CROPS).some((crop) => crop.matches(row)))
+    .sort((a, b) => dateValue(b.arrival_date) - dateValue(a.arrival_date) ||
+      String(a.commodity || "").localeCompare(String(b.commodity || "")))
+    .slice(0, 100)
+    .map((row) => {
+      const crop = Object.values(CROPS).find((item) => item.matches(row));
+      return {
+        district: row.district,
+        market: row.market,
+        market_name_te: MARKET_NAMES_TE[row.market] || market.label,
+        commodity: row.commodity,
+        crop_label: crop?.label || row.commodity,
+        variety: row.variety,
+        arrival_date: row.arrival_date,
+        min_price: Number(row.min_price),
+        max_price: Number(row.max_price),
+        modal_price: Number(row.modal_price),
+      };
+    });
+}
+
+export function filterTargetMarketRecords(records) {
+  return Object.keys(MARKETS).flatMap((marketKey) =>
+    filterMarketRecords(records, marketKey).map((record) => ({ ...record, market_key: marketKey })),
+  );
+}
+
+export function filterAllMandiRecords(records) {
+  const output = [];
+  for (const [marketKey, market] of Object.entries(MARKETS)) {
+    for (const [cropKey, crop] of Object.entries(CROPS)) {
+      for (const record of filterMandiRecords(records, marketKey, cropKey) || []) {
+        output.push({
+          ...record,
+          market_key: marketKey,
+          market_label: market.label,
+          crop_key: cropKey,
+          crop_label: crop.label,
+        });
+      }
+    }
+  }
+  return output.slice(0, 50);
+}
+
 async function fetchTelanganaRecords(env) {
-  const cacheKey = new Request("https://cache.surakanti.net/agri/mandi/telangana-v1");
+  const cacheKey = new Request("https://cache.surakanti.net/agri/mandi/telangana-v2");
   const cache = typeof caches !== "undefined" ? caches.default : null;
   const cached = cache ? await cache.match(cacheKey) : null;
   if (cached) return cached.json();
@@ -83,41 +139,30 @@ export async function onRequest(context) {
   if (request.method === "OPTIONS") return optionsResponse(request, env);
   if (request.method !== "GET") return jsonResponse(request, env, { error: "Method not allowed" }, 405);
 
-  const startedAt = Date.now();
-  let db;
   try {
-    db = requireDatabase(env);
-    const session = await findSession(request, env);
-    if (!session) return jsonResponse(request, env, { error: "ముందుగా పైలట్ ఆహ్వాన కోడ్ నమోదు చేయండి." }, 401);
     if (!env.DATA_GOV_IN_API_KEY) return jsonResponse(request, env, { error: "మండి ధరల సేవ కాన్ఫిగర్ కాలేదు." }, 503);
 
     const url = new URL(request.url);
     const marketKey = url.searchParams.get("market") || "";
     const cropKey = url.searchParams.get("crop") || "";
-    if (!MARKETS[marketKey] || !CROPS[cropKey]) {
-      return jsonResponse(request, env, { error: "మార్కెట్ మరియు పంటను ఎంచుకోండి." }, 400);
+    if ((marketKey && !MARKETS[marketKey]) || (cropKey && (!marketKey || !CROPS[cropKey]))) {
+      return jsonResponse(request, env, { error: "చెల్లని మార్కెట్ లేదా పంట." }, 400);
     }
 
-    const limit = await consumeRateLimit(db, session.invite_id);
-    if (!limit.allowed) return jsonResponse(request, env, {
-      error: "గంటకు 30 అభ్యర్థనల పైలట్ పరిమితి పూర్తయింది. కొంతసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.",
-      retry_after: limit.retryAfter,
-    }, 429, { "Retry-After": String(limit.retryAfter) });
-
     const payload = await fetchTelanganaRecords(env);
-    const records = filterMandiRecords(payload.records, marketKey, cropKey);
-    await recordLatency(db, "/api/agri/mandi", startedAt, "data.gov.in", "ok");
+    const records = cropKey
+      ? filterMandiRecords(payload.records, marketKey, cropKey)
+      : marketKey
+        ? filterMarketRecords(payload.records, marketKey)
+        : filterTargetMarketRecords(payload.records);
     return jsonResponse(request, env, {
-      market: { id: marketKey, label: MARKETS[marketKey].label },
-      crop: { id: cropKey, label: CROPS[cropKey].label },
+      market: marketKey ? { id: marketKey, label: MARKETS[marketKey].label } : null,
+      crop: cropKey ? { id: cropKey, label: CROPS[cropKey].label } : null,
       unit: "₹ / క్వింటాల్",
       fetched_at: payload.fetched_at,
       records,
-    }, 200, { "Cache-Control": "private, no-store" });
+    }, 200, { "Cache-Control": "public, max-age=300" });
   } catch {
-    if (db) {
-      try { await recordLatency(db, "/api/agri/mandi", startedAt, "data.gov.in", "error"); } catch {}
-    }
     return jsonResponse(request, env, { error: "మండి ధరలు ప్రస్తుతం అందుబాటులో లేవు." }, 503);
   }
 }
