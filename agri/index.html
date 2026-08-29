@@ -146,6 +146,13 @@
                 <input type="text" id="user-input" maxlength="1000" placeholder="మీ ప్రశ్నను టైప్ చేయండి..." class="flex-1 min-w-0 px-4 py-2 text-sm rounded-xl border border-slate-200 outline-none">
                 <button onclick="askAI()" class="bg-emerald-600 text-white px-5 py-2 text-sm rounded-xl font-bold">అడగండి</button>
             </div>
+            <div id="voice-review" class="hidden px-3 pb-3 bg-white">
+                <div class="flex items-center gap-2 rounded-xl bg-sky-50 border border-sky-100 p-2">
+                    <span id="voice-review-label" class="flex-1 text-xs font-bold text-sky-900">🎙️ రికార్డింగ్ సిద్ధంగా ఉంది</span>
+                    <button id="voice-send-button" onclick="sendPendingVoice()" class="bg-emerald-600 text-white px-3 py-2 text-xs rounded-lg font-bold">పంపండి</button>
+                    <button onclick="cancelVoice()" class="bg-white text-slate-600 px-3 py-2 text-xs rounded-lg border border-slate-200 font-bold">రద్దు</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -268,6 +275,9 @@
         let recordingStream;
         let audioChunks = [];
         let recordingTimer;
+        let pendingVoiceBlob;
+        let discardRecording = false;
+        let activeSpeechId;
         const voiceAnswers = new Map();
         async function toggleRecording() {
             if (!pilotReady) return;
@@ -280,6 +290,8 @@
                 return;
             }
             try {
+                cancelPendingVoice();
+                discardRecording = false;
                 recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 const preferred = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(type => MediaRecorder.isTypeSupported(type));
                 mediaRecorder = preferred ? new MediaRecorder(recordingStream, { mimeType: preferred }) : new MediaRecorder(recordingStream);
@@ -290,7 +302,11 @@
                 const button = document.getElementById('voice-button');
                 button.textContent = '⏹️';
                 button.title = 'రికార్డింగ్ ఆపండి';
+                button.setAttribute('aria-label', 'రికార్డింగ్ ఆపండి');
                 button.classList.add('animate-pulse', 'bg-red-100', 'text-red-700');
+                document.getElementById('voice-review-label').textContent = '🔴 రికార్డింగ్ జరుగుతోంది… ఆపడానికి ⏹️ నొక్కండి';
+                document.getElementById('voice-send-button').classList.add('hidden');
+                document.getElementById('voice-review').classList.remove('hidden');
                 recordingTimer = setTimeout(() => {
                     if (mediaRecorder?.state === 'recording') mediaRecorder.stop();
                 }, 30000);
@@ -304,13 +320,42 @@
             const button = document.getElementById('voice-button');
             button.textContent = '🎙️';
             button.title = 'తెలుగులో మాట్లాడండి';
+            button.setAttribute('aria-label', 'తెలుగులో మాట్లాడండి');
             button.classList.remove('animate-pulse', 'bg-red-100', 'text-red-700');
             const blob = new Blob(audioChunks, { type: mediaRecorder?.mimeType || 'audio/webm' });
-            if (!blob.size) {
-                addChatError('వాయిస్ రికార్డింగ్ అందలేదు. మళ్లీ ప్రయత్నించండి.');
+            if (discardRecording) {
+                discardRecording = false;
+                cancelPendingVoice();
                 return;
             }
+            if (!blob.size) {
+                addChatError('వాయిస్ రికార్డింగ్ అందలేదు. మళ్లీ ప్రయత్నించండి.');
+                cancelPendingVoice();
+                return;
+            }
+            pendingVoiceBlob = blob;
+            document.getElementById('voice-review-label').textContent = '🎙️ రికార్డింగ్ సిద్ధంగా ఉంది';
+            document.getElementById('voice-send-button').classList.remove('hidden');
+            document.getElementById('voice-review').classList.remove('hidden');
+        }
+        async function sendPendingVoice() {
+            if (!pendingVoiceBlob) return;
+            const blob = pendingVoiceBlob;
+            pendingVoiceBlob = undefined;
+            document.getElementById('voice-review').classList.add('hidden');
             await sendVoice(blob);
+        }
+        function cancelPendingVoice() {
+            pendingVoiceBlob = undefined;
+            document.getElementById('voice-review').classList.add('hidden');
+        }
+        function cancelVoice() {
+            if (mediaRecorder?.state === 'recording') {
+                discardRecording = true;
+                mediaRecorder.stop();
+                return;
+            }
+            cancelPendingVoice();
         }
         async function sendVoice(blob) {
             const chatWindow = document.getElementById('chat-window');
@@ -329,30 +374,51 @@
                 const answerId = 'voice-answer-' + Date.now();
                 voiceAnswers.set(answerId, data.text);
                 chatWindow.innerHTML += `<div class="bg-emerald-50 p-3 rounded-2xl self-end text-sm shadow-sm max-w-[85%]"><strong>మీరు చెప్పింది:</strong> ${escapeHtml(data.transcript)}</div>`;
-                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full whitespace-pre-line"><strong>AI:</strong> ${escapeHtml(data.text)}<button onclick="speakAnswer('${answerId}')" class="block mt-3 text-xs font-bold text-sky-700">🔊 వినండి</button></div>`;
-                speakTelugu(data.text);
+                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full whitespace-pre-line"><strong>AI:</strong> ${escapeHtml(data.text)}<button data-speech-id="${answerId}" onclick="toggleSpeech('${answerId}')" class="block mt-3 text-xs font-bold text-sky-700">🔊 వినండి</button></div>`;
             } catch (e) {
                 document.getElementById(loadingId)?.remove();
                 addChatError(e.message || 'వాయిస్ ప్రశ్నను పంపలేకపోయాము.');
             }
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
-        function speakAnswer(id) {
+        function toggleSpeech(id) {
+            if (window.speechSynthesis?.speaking && activeSpeechId === id) {
+                stopSpeech();
+                return;
+            }
             const text = voiceAnswers.get(id);
-            if (text) speakTelugu(text);
+            if (text) speakTelugu(text, id);
         }
-        function speakTelugu(text) {
+        function speakTelugu(text, id) {
             if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
                 addChatError('ఈ పరికరంలో తెలుగు వాయిస్ అవుట్‌పుట్ అందుబాటులో లేదు.');
                 return;
             }
-            speechSynthesis.cancel();
+            stopSpeech();
             const utterance = new SpeechSynthesisUtterance(text);
+            activeSpeechId = id;
             utterance.lang = 'te-IN';
             const teluguVoice = speechSynthesis.getVoices().find(voice => voice.lang?.toLowerCase().startsWith('te'));
             if (teluguVoice) utterance.voice = teluguVoice;
             utterance.rate = 0.9;
+            utterance.addEventListener('end', resetSpeechButtons, { once: true });
+            utterance.addEventListener('error', resetSpeechButtons, { once: true });
+            updateSpeechButtons();
             speechSynthesis.speak(utterance);
+        }
+        function stopSpeech() {
+            if (window.speechSynthesis) speechSynthesis.cancel();
+            activeSpeechId = undefined;
+            updateSpeechButtons();
+        }
+        function resetSpeechButtons() {
+            activeSpeechId = undefined;
+            updateSpeechButtons();
+        }
+        function updateSpeechButtons() {
+            document.querySelectorAll('[data-speech-id]').forEach(button => {
+                button.textContent = button.dataset.speechId === activeSpeechId ? '⏹️ ఆపండి' : '🔊 వినండి';
+            });
         }
         function addChatError(message) {
             const chatWindow = document.getElementById('chat-window');
