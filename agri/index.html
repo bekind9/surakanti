@@ -140,7 +140,9 @@
                 <div class="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm max-w-[85%]">నమస్కారం! మీ పంట గురించి ప్రశ్న అడగండి.</div>
             </div>
             <div id="chat-controls" class="p-3 bg-white border-t border-slate-100 flex gap-2 hidden">
-                <input type="text" id="user-input" maxlength="1000" placeholder="మీ ప్రశ్నను టైప్ చేయండి..." class="flex-1 px-4 py-2 text-sm rounded-xl border border-slate-200 outline-none">
+                <input type="file" id="camera-input" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
+                <button onclick="openCamera()" aria-label="పంట ఫోటో తీయండి" title="పంట ఫోటో తీయండి" class="bg-amber-100 text-amber-800 px-3 py-2 text-lg rounded-xl font-bold">📷</button>
+                <input type="text" id="user-input" maxlength="1000" placeholder="మీ ప్రశ్నను టైప్ చేయండి..." class="flex-1 min-w-0 px-4 py-2 text-sm rounded-xl border border-slate-200 outline-none">
                 <button onclick="askAI()" class="bg-emerald-600 text-white px-5 py-2 text-sm rounded-xl font-bold">అడగండి</button>
             </div>
         </div>
@@ -212,6 +214,55 @@
             }
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
+        function openCamera() {
+            if (!pilotReady) return;
+            document.getElementById('camera-input').click();
+        }
+        async function compressImage(file) {
+            const bitmap = await createImageBitmap(file);
+            const maxSide = 1024;
+            const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+            canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+            canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+            bitmap.close();
+            return canvas.toDataURL('image/jpeg', 0.75);
+        }
+        async function sendPlantPhoto(file) {
+            const input = document.getElementById('user-input');
+            const chatWindow = document.getElementById('chat-window');
+            const message = input.value.trim() || 'ఈ పంట ఫోటోను పరిశీలించి కనిపిస్తున్న సమస్య గురించి చెప్పండి.';
+            const loadingId = 'loading-' + Date.now();
+            try {
+                const image = await compressImage(file);
+                if (image.length > 2000000) throw new Error('ఫోటో పరిమాణం ఎక్కువగా ఉంది. మరో ఫోటో ప్రయత్నించండి.');
+                chatWindow.innerHTML += `<div class="bg-emerald-100 p-3 rounded-2xl rounded-br-sm self-end text-sm shadow-sm max-w-[85%]"><img src="${image}" alt="ఎంచుకున్న పంట ఫోటో" class="rounded-lg mb-2 max-h-40"><strong>You:</strong> ${escapeHtml(message)}</div>`;
+                input.value = '';
+                chatWindow.innerHTML += `<div id="${loadingId}" class="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm typing-indicator max-w-[85%]"><span></span><span></span><span></span></div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                const response = await fetch('/api/agri/image', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, image })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data?.error || `ఫోటో సేవలో సమస్య ఉంది (${response.status}).`);
+                document.getElementById(loadingId)?.remove();
+                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full whitespace-pre-line"><strong>AI:</strong> ${escapeHtml(data.text || 'సమాధానం అందలేదు.')}</div>`;
+            } catch (e) {
+                document.getElementById(loadingId)?.remove();
+                chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">${escapeHtml(e.message || 'ఫోటోను పంపలేకపోయాము.')}</div>`;
+            } finally {
+                document.getElementById('camera-input').value = '';
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        }
+        document.getElementById('camera-input').addEventListener('change', (event) => {
+            const file = event.target.files?.[0];
+            if (file) sendPlantPhoto(file);
+        });
         document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
         document.getElementById('access-code').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlockPilot(); });
         function escapeHtml(value) {
