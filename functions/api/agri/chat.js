@@ -83,8 +83,9 @@ export async function onRequest(context) {
         body: JSON.stringify({
           model: MUSE_MODEL,
           messages,
+          reasoning_effort: "low",
           temperature: 0.2,
-          max_tokens: 500,
+          max_tokens: 1000,
           stream: false,
         }),
         signal: controller.signal,
