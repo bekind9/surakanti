@@ -85,7 +85,7 @@ export async function onRequest(context) {
           messages,
           reasoning_effort: "low",
           temperature: 0.2,
-          max_tokens: 1000,
+          max_tokens: 1200,
           stream: false,
         }),
         signal: controller.signal,
