@@ -142,6 +142,7 @@
             <div id="chat-controls" class="p-3 bg-white border-t border-slate-100 flex gap-2 hidden">
                 <input type="file" id="camera-input" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
                 <button onclick="openCamera()" aria-label="పంట ఫోటో తీయండి" title="పంట ఫోటో తీయండి" class="bg-amber-100 text-amber-800 px-3 py-2 text-lg rounded-xl font-bold">📷</button>
+                <button id="voice-button" onclick="toggleRecording()" aria-label="తెలుగులో మాట్లాడండి" title="తెలుగులో మాట్లాడండి" class="bg-sky-100 text-sky-800 px-3 py-2 text-lg rounded-xl font-bold">🎙️</button>
                 <input type="text" id="user-input" maxlength="1000" placeholder="మీ ప్రశ్నను టైప్ చేయండి..." class="flex-1 min-w-0 px-4 py-2 text-sm rounded-xl border border-slate-200 outline-none">
                 <button onclick="askAI()" class="bg-emerald-600 text-white px-5 py-2 text-sm rounded-xl font-bold">అడగండి</button>
             </div>
@@ -263,6 +264,101 @@
             const file = event.target.files?.[0];
             if (file) sendPlantPhoto(file);
         });
+        let mediaRecorder;
+        let recordingStream;
+        let audioChunks = [];
+        let recordingTimer;
+        const voiceAnswers = new Map();
+        async function toggleRecording() {
+            if (!pilotReady) return;
+            if (mediaRecorder?.state === 'recording') {
+                mediaRecorder.stop();
+                return;
+            }
+            if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+                addChatError('ఈ బ్రౌజర్‌లో వాయిస్ రికార్డింగ్ అందుబాటులో లేదు.');
+                return;
+            }
+            try {
+                recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const preferred = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(type => MediaRecorder.isTypeSupported(type));
+                mediaRecorder = preferred ? new MediaRecorder(recordingStream, { mimeType: preferred }) : new MediaRecorder(recordingStream);
+                audioChunks = [];
+                mediaRecorder.addEventListener('dataavailable', event => { if (event.data.size) audioChunks.push(event.data); });
+                mediaRecorder.addEventListener('stop', finishRecording, { once: true });
+                mediaRecorder.start();
+                const button = document.getElementById('voice-button');
+                button.textContent = '⏹️';
+                button.title = 'రికార్డింగ్ ఆపండి';
+                button.classList.add('animate-pulse', 'bg-red-100', 'text-red-700');
+                recordingTimer = setTimeout(() => {
+                    if (mediaRecorder?.state === 'recording') mediaRecorder.stop();
+                }, 30000);
+            } catch {
+                addChatError('మైక్రోఫోన్ అనుమతి ఇవ్వండి, తర్వాత మళ్లీ ప్రయత్నించండి.');
+            }
+        }
+        async function finishRecording() {
+            clearTimeout(recordingTimer);
+            recordingStream?.getTracks().forEach(track => track.stop());
+            const button = document.getElementById('voice-button');
+            button.textContent = '🎙️';
+            button.title = 'తెలుగులో మాట్లాడండి';
+            button.classList.remove('animate-pulse', 'bg-red-100', 'text-red-700');
+            const blob = new Blob(audioChunks, { type: mediaRecorder?.mimeType || 'audio/webm' });
+            if (!blob.size) {
+                addChatError('వాయిస్ రికార్డింగ్ అందలేదు. మళ్లీ ప్రయత్నించండి.');
+                return;
+            }
+            await sendVoice(blob);
+        }
+        async function sendVoice(blob) {
+            const chatWindow = document.getElementById('chat-window');
+            const loadingId = 'loading-' + Date.now();
+            chatWindow.innerHTML += `<div class="bg-sky-100 p-3 rounded-2xl rounded-br-sm self-end text-sm shadow-sm max-w-[85%]">🎙️ వాయిస్ ప్రశ్న పంపబడింది</div>`;
+            chatWindow.innerHTML += `<div id="${loadingId}" class="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm typing-indicator max-w-[85%]"><span></span><span></span><span></span></div>`;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            try {
+                const form = new FormData();
+                const extension = blob.type.includes('mp4') ? 'm4a' : 'webm';
+                form.append('audio', blob, `question.${extension}`);
+                const response = await fetch('/api/agri/voice', { method: 'POST', credentials: 'include', body: form });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data?.error || `వాయిస్ సేవలో సమస్య ఉంది (${response.status}).`);
+                document.getElementById(loadingId)?.remove();
+                const answerId = 'voice-answer-' + Date.now();
+                voiceAnswers.set(answerId, data.text);
+                chatWindow.innerHTML += `<div class="bg-emerald-50 p-3 rounded-2xl self-end text-sm shadow-sm max-w-[85%]"><strong>మీరు చెప్పింది:</strong> ${escapeHtml(data.transcript)}</div>`;
+                chatWindow.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm w-full whitespace-pre-line"><strong>AI:</strong> ${escapeHtml(data.text)}<button onclick="speakAnswer('${answerId}')" class="block mt-3 text-xs font-bold text-sky-700">🔊 వినండి</button></div>`;
+                speakTelugu(data.text);
+            } catch (e) {
+                document.getElementById(loadingId)?.remove();
+                addChatError(e.message || 'వాయిస్ ప్రశ్నను పంపలేకపోయాము.');
+            }
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        function speakAnswer(id) {
+            const text = voiceAnswers.get(id);
+            if (text) speakTelugu(text);
+        }
+        function speakTelugu(text) {
+            if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+                addChatError('ఈ పరికరంలో తెలుగు వాయిస్ అవుట్‌పుట్ అందుబాటులో లేదు.');
+                return;
+            }
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'te-IN';
+            const teluguVoice = speechSynthesis.getVoices().find(voice => voice.lang?.toLowerCase().startsWith('te'));
+            if (teluguVoice) utterance.voice = teluguVoice;
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        }
+        function addChatError(message) {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">${escapeHtml(message)}</div>`;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
         document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
         document.getElementById('access-code').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlockPilot(); });
         function escapeHtml(value) {

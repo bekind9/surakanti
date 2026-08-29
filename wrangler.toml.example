@@ -8,5 +8,8 @@ database_name = "surakanti-agri-db"
 database_id = "REPLACE_WITH_D1_DATABASE_ID"
 migrations_dir = "./migrations"
 
+[ai]
+binding = "AI"
+
 [vars]
 AGRI_ALLOWED_ORIGIN = "https://agri.surakanti.net"
