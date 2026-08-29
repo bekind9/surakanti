@@ -137,7 +137,28 @@
                 <p id="access-error" class="text-red-500 text-xs mt-2 hidden"></p>
             </div>
             <div id="chat-window" class="chat-window h-[350px] overflow-y-auto p-4 flex flex-col gap-4 bg-slate-50/80 hidden">
-                <div class="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm max-w-[85%]">నమస్కారం! మీ పంట గురించి ప్రశ్న అడగండి.</div>
+                <div class="bg-white p-3 rounded-2xl rounded-bl-sm border border-slate-100 self-start text-sm shadow-sm max-w-[85%]">నమస్కారం! మీ పంట గురించి ప్రశ్న అడగండి.<button onclick="toggleMandiPanel()" class="block mt-3 text-xs font-bold text-amber-700">₹ మండి ధరలు చూడండి</button></div>
+                <div id="mandi-panel" class="hidden bg-amber-50 border border-amber-100 p-3 rounded-2xl text-sm">
+                    <p class="font-bold text-amber-900 mb-2">మండి ధరలు</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="mandi-market" class="min-w-0 rounded-lg border border-amber-200 bg-white px-2 py-2 text-xs">
+                            <option value="nizamabad">నిజామాబాద్</option>
+                            <option value="warangal">వరంగల్</option>
+                            <option value="hyderabad">హైదరాబాద్</option>
+                            <option value="karimnagar">కరీంనగర్</option>
+                            <option value="metpally">మెట్‌పల్లి</option>
+                        </select>
+                        <select id="mandi-crop" class="min-w-0 rounded-lg border border-amber-200 bg-white px-2 py-2 text-xs">
+                            <option value="maize">మొక్కజొన్న</option>
+                            <option value="rice">వరి / బియ్యం</option>
+                            <option value="turmeric">పసుపు</option>
+                            <option value="chilli">మిర్చి</option>
+                            <option value="sesame">నువ్వులు</option>
+                        </select>
+                    </div>
+                    <button onclick="loadMandiPrices()" class="mt-2 w-full rounded-lg bg-amber-600 px-3 py-2 text-xs font-bold text-white">ధర చూడండి</button>
+                    <p id="mandi-status" class="mt-2 text-xs text-amber-900"></p>
+                </div>
             </div>
             <div id="chat-controls" class="p-3 bg-white border-t border-slate-100 flex gap-2 hidden">
                 <input type="file" id="camera-input" accept="image/jpeg,image/png,image/webp" capture="environment" class="hidden">
@@ -424,6 +445,34 @@
             const chatWindow = document.getElementById('chat-window');
             chatWindow.innerHTML += `<div class="text-red-500 text-xs p-2">${escapeHtml(message)}</div>`;
             chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        function toggleMandiPanel() {
+            document.getElementById('mandi-panel').classList.toggle('hidden');
+        }
+        async function loadMandiPrices() {
+            if (!pilotReady) return;
+            const market = document.getElementById('mandi-market').value;
+            const crop = document.getElementById('mandi-crop').value;
+            const status = document.getElementById('mandi-status');
+            status.textContent = 'ధరలు చూస్తున్నాము…';
+            try {
+                const params = new URLSearchParams({ market, crop });
+                const response = await fetch(`/api/agri/mandi?${params}`, { credentials: 'include' });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data?.error || `మండి ధరల సేవలో సమస్య ఉంది (${response.status}).`);
+                const records = Array.isArray(data.records) ? data.records : [];
+                if (!records.length) {
+                    status.textContent = `${data.market.label}లో ${data.crop.label}కు ప్రస్తుత సమాచారం లేదు.`;
+                    return;
+                }
+                const cards = records.slice(0, 6).map(record => {
+                    const price = value => Number.isFinite(Number(value)) ? `₹${Number(value).toLocaleString('en-IN')}` : '—';
+                    return `<div class="mt-2 rounded-xl border border-amber-100 bg-white p-3 text-xs"><strong>${escapeHtml(record.market)}</strong><br>${escapeHtml(record.commodity)}${record.variety ? ` · ${escapeHtml(record.variety)}` : ''}<br><span class="text-slate-500">${escapeHtml(record.arrival_date)} · క్వింటాల్‌కు</span><br><span class="font-bold text-emerald-800">సాధారణ ధర: ${price(record.modal_price)}</span><br><span class="text-slate-600">కనిష్ఠం ${price(record.min_price)} · గరిష్ఠం ${price(record.max_price)}</span></div>`;
+                }).join('');
+                status.innerHTML = `<span class="text-[11px] text-amber-800">ప్రభుత్వ AGMARKNET సమాచారం</span>${cards}`;
+            } catch (error) {
+                status.textContent = error.message || 'మండి ధరలు అందుబాటులో లేవు.';
+            }
         }
         document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
         document.getElementById('access-code').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlockPilot(); });

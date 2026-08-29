@@ -12,6 +12,8 @@ export async function onRequest(context) {
       service: "surakanti-agri-api",
       database: "ok",
       muse_configured: Boolean(env.MUSE_API_KEY),
+      voice_configured: Boolean(env.AI),
+      mandi_configured: Boolean(env.DATA_GOV_IN_API_KEY),
       timestamp: new Date().toISOString(),
     });
   } catch {
@@ -20,6 +22,8 @@ export async function onRequest(context) {
       service: "surakanti-agri-api",
       database: "unavailable",
       muse_configured: Boolean(env.MUSE_API_KEY),
+      voice_configured: Boolean(env.AI),
+      mandi_configured: Boolean(env.DATA_GOV_IN_API_KEY),
     }, 503);
   }
 }
