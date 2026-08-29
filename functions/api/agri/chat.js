@@ -14,6 +14,26 @@ import {
 const MUSE_BASE_URL = "https://api.meta.ai/v1";
 const MUSE_MODEL = "muse-spark-1.2-contributor";
 
+export function extractText(result) {
+  const content = result?.choices?.[0]?.message?.content;
+  if (typeof content === "string") return content.trim();
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => typeof part === "string" ? part : part?.text || part?.content || "")
+      .join("")
+      .trim();
+  }
+  if (typeof result?.output_text === "string") return result.output_text.trim();
+  if (Array.isArray(result?.output)) {
+    return result.output
+      .flatMap((item) => Array.isArray(item?.content) ? item.content : [])
+      .map((part) => part?.text || part?.content || "")
+      .join("")
+      .trim();
+  }
+  return "";
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
   if (request.method === "OPTIONS") return optionsResponse(request, env);
@@ -78,7 +98,7 @@ export async function onRequest(context) {
       return jsonResponse(request, env, { error: "AI సేవ ప్రస్తుతం అందుబాటులో లేదు." }, 502);
     }
     const result = await response.json();
-    const answer = result?.choices?.[0]?.message?.content?.trim();
+    const answer = extractText(result);
     if (!answer) {
       await recordLatency(db, "/api/agri/chat", startedAt, "muse", "empty");
       return jsonResponse(request, env, { error: "సమాధానం అందలేదు. మళ్లీ ప్రయత్నించండి." }, 502);
