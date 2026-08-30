@@ -1,0 +1,6 @@
+name = "surakanti"
+compatibility_date = "2026-08-30"
+
+[assets]
+directory = "./.dist-main"
+html_handling = "auto-trailing-slash"

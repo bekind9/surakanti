@@ -5,3 +5,4 @@ deploy.sh
 index.htm_backup
 *.log
 .dev.vars
+.dist-main/
