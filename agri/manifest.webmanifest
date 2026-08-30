@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "Surakanti Agri",
+  "short_name": "Surakanti Agri",
+  "description": "Telugu farming guidance, Kathlapur weather, and Telangana mandi prices.",
+  "lang": "te",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#064e3b",
+  "categories": ["agriculture", "weather", "utilities"],
+  "icons": [
+    { "src": "./icons/agri-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/agri-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/agri-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

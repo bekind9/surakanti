@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Surakanti Agri provides 24/7 localized agricultural expertise and crop diagnosis powered by AI.">
+    <meta name="theme-color" content="#064e3b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Surakanti Agri">
     <title>Surakanti Agri | Agricultural Support</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icons/agri-192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="./icons/agri-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -38,27 +46,29 @@
                 <a href="#services" class="text-sm hover:text-emerald-200 transition-colors">Services</a>
                 <a href="/forms" class="text-sm hover:text-emerald-200 transition-colors">Forms</a>
                 <a href="/blog" class="text-sm bg-emerald-700 hover:bg-emerald-600 px-4 py-1.5 rounded-full font-bold transition-colors ml-2">Blog</a>
+                <button id="install-app" type="button" class="hidden text-sm bg-white text-emerald-900 hover:bg-emerald-50 px-4 py-1.5 rounded-full font-bold">Install App</button>
                 <a href="#contact" class="text-sm hover:text-emerald-200 transition-colors">Contact</a>
             </div>
         </div>
     </nav>
 
-    <header class="py-20 px-4 text-center w-full max-w-6xl mx-auto overflow-hidden">
-        <h1 class="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight">AI Farming Help for <span class="text-emerald-600">Telangana Farmers</span></h1>
-        <p class="text-xl md:text-2xl text-emerald-700 font-bold mb-6">తెలంగాణ రైతుల కోసం AI వ్యవసాయ సహాయం</p>
-        <p class="text-lg md:text-xl text-slate-600 mb-5 max-w-3xl mx-auto">Get simple Telugu and English guidance for crop problems, pest diagnosis, mandi price checks, useful forms, and seasonal farming decisions.</p>
-        <p class="text-sm md:text-base text-slate-500 mb-10 max-w-3xl mx-auto">Ask about paddy, cotton, chilli, maize, red gram, fertilizers, pests, diseases, market prices, and farmer support schemes.</p>
-        <button onclick="toggleChat()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-emerald-600/30 transition transform hover:-translate-y-1 hover:shadow-xl">Ask AI Rythu</button>
+    <header class="py-7 md:py-16 px-4 text-center w-full max-w-6xl mx-auto overflow-hidden">
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-3 tracking-tight">AI Farming Help for <span class="text-emerald-600">Telangana Farmers</span></h1>
+        <p class="text-sm md:text-xl text-slate-600 mb-4 md:mb-6 max-w-3xl mx-auto">Crop guidance, weather and mandi prices in one place.</p>
+        <button onclick="toggleChat()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm md:text-base font-bold py-2.5 px-5 md:py-3 md:px-7 rounded-full shadow-md shadow-emerald-600/20 transition transform hover:-translate-y-1">Ask AI Rythu</button>
     </header>
 
-    <section class="px-6 pb-14 bg-white">
-        <div class="max-w-4xl mx-auto rounded-3xl border border-sky-100 bg-sky-50 p-5 md:p-7 shadow-sm">
-            <div class="flex items-start justify-between gap-4">
-                <div><p class="text-sm font-bold text-sky-700">కథలాపూర్, జగిత్యాల</p><h2 class="mt-1 text-2xl font-extrabold text-slate-900">నేటి వాతావరణం</h2></div>
-                <span id="weather-icon" class="text-4xl" aria-hidden="true">🌤️</span>
-            </div>
-            <p id="weather-status" class="mt-5 text-sm text-slate-600" aria-live="polite">వాతావరణ సమాచారం లోడ్ అవుతోంది…</p>
-            <div id="weather-details" class="mt-5 hidden grid grid-cols-2 md:grid-cols-3 gap-3">
+    <section class="px-4 md:px-6 pb-8 md:pb-14 bg-white">
+        <details id="weather-panel" class="group max-w-4xl mx-auto rounded-3xl border border-sky-100 bg-sky-50 shadow-sm overflow-hidden">
+            <summary class="flex cursor-pointer list-none items-center gap-3 p-4 md:p-6 [&::-webkit-details-marker]:hidden">
+                <span id="weather-icon" class="text-3xl" aria-hidden="true">🌤️</span>
+                <div class="flex-1"><p class="text-xs font-bold text-sky-700">కథలాపూర్, జగిత్యాల</p><h2 class="text-xl font-extrabold text-slate-900">నేటి వాతావరణం</h2></div>
+                <span id="weather-summary-temperature" class="text-xl font-extrabold text-slate-900">—</span>
+                <span class="text-slate-500 transition-transform group-open:rotate-180">⌄</span>
+            </summary>
+            <div class="border-t border-sky-100 px-4 pb-5 md:px-7 md:pb-7">
+            <p id="weather-status" class="mt-4 text-sm text-slate-600" aria-live="polite">వాతావరణ సమాచారం లోడ్ అవుతోంది…</p>
+            <div id="weather-details" class="mt-4 hidden grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div class="rounded-2xl bg-white p-4"><p class="text-xs text-slate-500">ఉష్ణోగ్రత</p><p id="weather-temperature" class="mt-1 text-xl font-extrabold">—</p></div>
                 <div class="rounded-2xl bg-white p-4"><p class="text-xs text-slate-500">తేమ</p><p id="weather-humidity" class="mt-1 text-xl font-extrabold">—</p></div>
                 <div class="rounded-2xl bg-white p-4"><p class="text-xs text-slate-500">వర్షం అవకాశం</p><p id="weather-rain-chance" class="mt-1 text-xl font-extrabold">—</p></div>
@@ -73,7 +83,8 @@
                 <div id="weather-daily" class="mt-3 flex gap-3 overflow-x-auto pb-2"></div>
             </div>
             <p class="mt-4 text-xs text-slate-500">Weather data by <a href="https://open-meteo.com/" class="underline" rel="noopener">Open-Meteo</a></p>
-        </div>
+            </div>
+        </details>
     </section>
 
     <section id="services" class="py-12 px-6 bg-white border-y border-slate-100">
@@ -92,7 +103,7 @@
                 <h3 class="font-bold text-lg">Pest & Disease Help</h3>
                 <p class="text-slate-500 text-sm mt-2">General guidance for pests, disease symptoms, and leaf spots.</p>
             </div>
-            <a href="#mandi-prices" class="block p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm hover:border-amber-300 hover:shadow-md transition">
+            <a href="#mandi-prices" onclick="document.getElementById('mandi-panel').open = true" class="block p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm hover:border-amber-300 hover:shadow-md transition">
                 <div class="text-3xl mb-3">📈</div>
                 <h3 class="font-bold text-lg">Mandi Price Checks</h3>
                 <p class="text-slate-500 text-sm mt-2">Check latest government market prices before selling crops.</p>
@@ -115,14 +126,14 @@
         </div>
     </section>
 
-    <section id="mandi-prices" class="py-14 px-6 bg-amber-50 border-b border-amber-100">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-8">
-                <p class="text-3xl mb-3">📈</p>
-                <h2 class="text-3xl font-extrabold text-slate-900">తెలంగాణ మండి ధరలు</h2>
-                <p class="text-slate-600 mt-2">ప్రభుత్వ AGMARKNET సమాచారం · ధరలు క్వింటాల్‌కు</p>
-            </div>
-            <div class="max-w-3xl mx-auto bg-white rounded-3xl border border-amber-100 shadow-sm p-5 md:p-7">
+    <section id="mandi-prices" class="py-8 md:py-14 px-4 md:px-6 bg-amber-50 border-b border-amber-100">
+        <details id="mandi-panel" class="group max-w-3xl mx-auto bg-white rounded-3xl border border-amber-100 shadow-sm overflow-hidden">
+            <summary class="flex cursor-pointer list-none items-center gap-3 p-4 md:p-6 [&::-webkit-details-marker]:hidden">
+                <span class="text-3xl">📈</span>
+                <div class="flex-1"><h2 class="text-xl md:text-2xl font-extrabold text-slate-900">తెలంగాణ మండి ధరలు</h2><p class="text-xs md:text-sm text-slate-500">ధరలు క్వింటాల్‌కు</p></div>
+                <span class="text-slate-500 transition-transform group-open:rotate-180">⌄</span>
+            </summary>
+            <div class="border-t border-amber-100 p-4 md:p-7">
                 <div class="flex flex-col sm:flex-row sm:items-end gap-3">
                     <label class="flex-1 text-sm font-bold text-slate-700">మార్కెట్ ఎంచుకోండి
                         <select id="mandi-market" onchange="showSelectedMandiPrices()" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base font-normal text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-200">
@@ -137,9 +148,10 @@
                 </div>
                 <p id="mandi-status" class="mt-4 text-sm text-slate-700" aria-live="polite"></p>
                 <div class="mt-3 overflow-x-auto rounded-xl border border-slate-200">
-                    <table class="w-full min-w-[620px] text-left text-sm">
+                    <table class="w-[540px] table-fixed text-left text-xs sm:w-full sm:min-w-[620px] sm:text-sm">
+                        <colgroup><col class="w-[130px]"><col class="w-[90px]"><col class="w-[110px]"><col class="w-[105px]"><col class="w-[105px]"></colgroup>
                         <thead class="bg-slate-100 text-slate-700">
-                            <tr><th class="p-3">పంట</th><th class="p-3">తేదీ</th><th class="p-3">కనిష్ఠం</th><th class="p-3">గరిష్ఠం</th><th class="p-3">సాధారణ ధర</th></tr>
+                            <tr><th class="p-2 sm:p-3">పంట</th><th class="p-2 sm:p-3">తేదీ</th><th class="p-2 sm:p-3">సాధారణ ధర</th><th class="p-2 sm:p-3">కనిష్ఠం</th><th class="p-2 sm:p-3">గరిష్ఠం</th></tr>
                         </thead>
                         <tbody id="mandi-table-body" class="divide-y divide-slate-100 bg-white">
                             <tr><td colspan="5" class="p-5 text-center text-slate-500">ధరలు చూడటానికి మార్కెట్ ఎంచుకోండి.</td></tr>
@@ -147,8 +159,12 @@
                     </table>
                 </div>
             </div>
-        </div>
+        </details>
     </section>
+
+    <script>
+        document.getElementById('services').before(document.getElementById('mandi-prices'));
+    </script>
 
     <section class="py-12 px-6 bg-white border-y border-slate-100">
         <div class="max-w-4xl mx-auto bg-emerald-50 border border-emerald-100 rounded-3xl p-6 md:p-8 text-center">
@@ -221,6 +237,30 @@
     </button>
 
     <script>
+        let installPrompt;
+        const installButton = document.getElementById('install-app');
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            installPrompt = event;
+            installButton.classList.remove('hidden');
+        });
+        installButton.addEventListener('click', async () => {
+            if (!installPrompt) return;
+            installPrompt.prompt();
+            await installPrompt.userChoice;
+            installPrompt = undefined;
+            installButton.classList.add('hidden');
+        });
+        window.addEventListener('appinstalled', () => {
+            installPrompt = undefined;
+            installButton.classList.add('hidden');
+        });
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const serviceWorkerUrl = ['127.0.0.1', 'localhost'].includes(location.hostname) ? '/agri/sw.js' : '/sw.js';
+                navigator.serviceWorker.register(serviceWorkerUrl).catch(() => {});
+            });
+        }
         function toggleChat() { document.getElementById('chat-widget').classList.toggle('hidden-chat'); }
         let pilotReady = false;
         async function unlockPilot() {
@@ -502,6 +542,7 @@
                 const value = (number, suffix) => Number.isFinite(Number(number)) ? `${Number(number).toLocaleString('te-IN')}${suffix}` : '—';
                 const temperature = number => Number.isFinite(Number(number)) ? `${Math.round(Number(number)).toLocaleString('te-IN')}°` : '—';
                 document.getElementById('weather-temperature').textContent = temperature(data.temperature_c);
+                document.getElementById('weather-summary-temperature').textContent = temperature(data.temperature_c);
                 document.getElementById('weather-humidity').textContent = value(data.humidity_percent, '%');
                 document.getElementById('weather-rain-chance').textContent = value(data.today?.rain_probability_percent, '%');
                 document.getElementById('weather-rain').textContent = value(data.precipitation_mm, ' mm');
@@ -556,11 +597,15 @@
                 return;
             }
             const price = value => Number.isFinite(Number(value)) ? `₹${Number(value).toLocaleString('en-IN')}` : '—';
-            tableBody.innerHTML = records.map(record => `<tr><td class="p-3 font-bold text-slate-800">${escapeHtml(record.crop_label)}${record.variety ? `<span class="block text-xs font-normal text-slate-500">${escapeHtml(record.variety)}</span>` : ''}</td><td class="p-3 whitespace-nowrap">${escapeHtml(record.arrival_date)}</td><td class="p-3">${price(record.min_price)}</td><td class="p-3">${price(record.max_price)}</td><td class="p-3 font-bold text-emerald-800">${price(record.modal_price)}</td></tr>`).join('');
+            tableBody.innerHTML = records.map(record => `<tr><td class="break-words p-2 font-bold leading-tight text-slate-800 sm:p-3">${escapeHtml(record.crop_label)}${record.variety ? `<span class="block text-[10px] font-normal text-slate-500 sm:text-xs">${escapeHtml(record.variety)}</span>` : ''}</td><td class="p-2 whitespace-nowrap text-[11px] sm:p-3 sm:text-sm">${escapeHtml(record.arrival_date)}</td><td class="p-2 font-bold whitespace-nowrap text-emerald-800 sm:p-3">${price(record.modal_price)}</td><td class="p-2 whitespace-nowrap sm:p-3">${price(record.min_price)}</td><td class="p-2 whitespace-nowrap sm:p-3">${price(record.max_price)}</td></tr>`).join('');
             status.textContent = '';
         }
         loadMandiPrices();
         loadWeather();
+        if (window.matchMedia('(min-width: 768px)').matches) {
+            document.getElementById('weather-panel').open = true;
+            document.getElementById('mandi-panel').open = true;
+        }
         document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') askAI(); });
         document.getElementById('access-code').addEventListener('keypress', (e) => { if(e.key === 'Enter') unlockPilot(); });
         function escapeHtml(value) {
