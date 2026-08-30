@@ -45,8 +45,7 @@
             <div class="flex flex-wrap gap-3 sm:gap-4 items-center justify-end">
                 <a href="#services" class="text-sm hover:text-emerald-200 transition-colors">Services</a>
                 <a href="/forms" class="text-sm hover:text-emerald-200 transition-colors">Forms</a>
-                <a href="/blog" class="text-sm bg-emerald-700 hover:bg-emerald-600 px-4 py-1.5 rounded-full font-bold transition-colors ml-2">Blog</a>
-                <button id="install-app" type="button" class="hidden text-sm bg-white text-emerald-900 hover:bg-emerald-50 px-4 py-1.5 rounded-full font-bold">Install App</button>
+                <a href="/blog" class="text-sm hover:text-emerald-200 transition-colors">Blog</a>
                 <a href="#contact" class="text-sm hover:text-emerald-200 transition-colors">Contact</a>
             </div>
         </div>
@@ -237,24 +236,6 @@
     </button>
 
     <script>
-        let installPrompt;
-        const installButton = document.getElementById('install-app');
-        window.addEventListener('beforeinstallprompt', event => {
-            event.preventDefault();
-            installPrompt = event;
-            installButton.classList.remove('hidden');
-        });
-        installButton.addEventListener('click', async () => {
-            if (!installPrompt) return;
-            installPrompt.prompt();
-            await installPrompt.userChoice;
-            installPrompt = undefined;
-            installButton.classList.add('hidden');
-        });
-        window.addEventListener('appinstalled', () => {
-            installPrompt = undefined;
-            installButton.classList.add('hidden');
-        });
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const serviceWorkerUrl = ['127.0.0.1', 'localhost'].includes(location.hostname) ? '/agri/sw.js' : '/sw.js';
