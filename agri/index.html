@@ -39,14 +39,26 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-emerald-200 selection:text-emerald-900">
 
-    <nav class="bg-emerald-900/95 backdrop-blur-md text-white py-3 px-8 shadow-md sticky top-0 z-50 border-b border-emerald-800">
+    <nav class="bg-emerald-900/95 backdrop-blur-md text-white py-3 px-4 md:px-8 shadow-md sticky top-0 z-50 border-b border-emerald-800">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="text-xl font-bold tracking-tight">Surakanti Agri</div>
-            <div class="flex flex-wrap gap-3 sm:gap-4 items-center justify-end">
+            <button id="mobile-menu-button" type="button" class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg hover:bg-emerald-800" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu" onclick="toggleMobileMenu()">
+                <span class="sr-only">Open menu</span>
+                <span class="flex w-6 flex-col gap-1.5" aria-hidden="true"><span class="h-0.5 w-full bg-white"></span><span class="h-0.5 w-full bg-white"></span><span class="h-0.5 w-full bg-white"></span></span>
+            </button>
+            <div class="hidden md:flex gap-4 items-center justify-end">
                 <a href="#services" class="text-sm hover:text-emerald-200 transition-colors">Services</a>
                 <a href="/forms" class="text-sm hover:text-emerald-200 transition-colors">Forms</a>
                 <a href="/blog" class="text-sm hover:text-emerald-200 transition-colors">Blog</a>
                 <a href="#contact" class="text-sm hover:text-emerald-200 transition-colors">Contact</a>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden max-w-6xl mx-auto pt-3 md:hidden">
+            <div class="flex flex-col overflow-hidden rounded-xl border border-emerald-700 bg-emerald-950/60">
+                <a href="#services" onclick="closeMobileMenu()" class="px-4 py-3 text-sm border-b border-emerald-800 hover:bg-emerald-800">Services</a>
+                <a href="/forms" class="px-4 py-3 text-sm border-b border-emerald-800 hover:bg-emerald-800">Forms</a>
+                <a href="/blog" class="px-4 py-3 text-sm border-b border-emerald-800 hover:bg-emerald-800">Blog</a>
+                <a href="#contact" onclick="closeMobileMenu()" class="px-4 py-3 text-sm hover:bg-emerald-800">Contact</a>
             </div>
         </div>
     </nav>
@@ -236,6 +248,20 @@
     </button>
 
     <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const button = document.getElementById('mobile-menu-button');
+            const isOpen = !menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', isOpen);
+            button.setAttribute('aria-expanded', String(!isOpen));
+            button.setAttribute('aria-label', isOpen ? 'Open navigation menu' : 'Close navigation menu');
+        }
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('hidden');
+            const button = document.getElementById('mobile-menu-button');
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-label', 'Open navigation menu');
+        }
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const serviceWorkerUrl = ['127.0.0.1', 'localhost'].includes(location.hostname) ? '/agri/sw.js' : '/sw.js';
