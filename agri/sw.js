@@ -1,4 +1,4 @@
-const CACHE_NAME = "surakanti-agri-v1";
+const CACHE_NAME = "surakanti-agri-v2";
 const APP_ROOT = new URL("./", self.registration.scope).pathname;
 const APP_SHELL = ["./", "./manifest.webmanifest", "./icons/agri-192.png", "./icons/agri-512.png"]
   .map((path) => new URL(path, self.registration.scope).href);
